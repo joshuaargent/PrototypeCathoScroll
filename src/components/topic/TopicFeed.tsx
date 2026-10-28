@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { shuffle } from '@/lib/utils';
 
@@ -12,34 +12,48 @@ interface TopicFeedProps {
   topics: Topic[];
 }
 
-export function TopicFeed({ topics }: TopicFeedProps) {
-  const shuffledTopics = useMemo(() => shuffle(topics), [topics]);
+export function TopicFeed({
+  topics,
+}: TopicFeedProps) {
+  const [feedTopics, setFeedTopics] =
+    useState<Topic[]>([]);
 
-  const [topicIndex, setTopicIndex] = useState(0);
+  const [topicIndex, setTopicIndex] =
+    useState(0);
+
+  // Create initial shuffled feed
+  useEffect(() => {
+    setFeedTopics(shuffle(topics));
+  }, [topics]);
 
   const nextTopic = () => {
-    setTopicIndex((prev) => {
-      if (prev >= shuffledTopics.length - 1) {
+    setTopicIndex(prev => {
+      const nextIndex = prev + 1;
+
+      // Reached end of feed
+      if (nextIndex >= feedTopics.length) {
+        setFeedTopics(shuffle(topics));
+
         return 0;
       }
 
-      return prev + 1;
+      return nextIndex;
     });
   };
 
   const previousTopic = () => {
-    setTopicIndex((prev) => {
-      if (prev <= 0) {
-        return 0;
-      }
-
-      return prev - 1;
-    });
+    setTopicIndex(prev =>
+      Math.max(0, prev - 1)
+    );
   };
+
+  if (!feedTopics.length) {
+    return null;
+  }
 
   return (
     <TopicViewer
-      topic={shuffledTopics[topicIndex]}
+      topic={feedTopics[topicIndex]}
       onNextTopic={nextTopic}
       onPreviousTopic={previousTopic}
     />
