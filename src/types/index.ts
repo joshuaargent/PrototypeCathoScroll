@@ -59,8 +59,17 @@ export interface Topic {
 }
 
 export interface TopicSlide {
+  type:
+    | 'question'
+    | 'answer'
+    | 'explanation'
+    | 'catechism'
+    | 'scripture';
+
   title: string;
+
   content: string;
+
   reference?: string;
 }
 

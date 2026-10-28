@@ -6,6 +6,13 @@ import { Card } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
 
 interface TopicCardProps {
+  type:
+    | 'question'
+    | 'answer'
+    | 'explanation'
+    | 'catechism'
+    | 'scripture';
+
   category: string;
   title: string;
   content: string;
@@ -20,22 +27,19 @@ export function TopicCard({
   reference,
   onShare,
 }: TopicCardProps) {
-  const isQuestion = title === 'Question';
+  const type = title.toLowerCase();
+
+  const isQuestion =
+    type.includes('question');
 
   const isAnswer =
-    title === 'Short Answer';
+    type.includes('answer');
 
   const isExplanation =
-    title === 'Explanation';
+    type.includes('explanation');
 
   const isCatechism =
-    title === 'Catechism';
-
-  const isScripture =
-    !isQuestion &&
-    !isAnswer &&
-    !isExplanation &&
-    !isCatechism;
+    type.includes('catechism');
 
   return (
     <Card
@@ -43,6 +47,7 @@ export function TopicCard({
       className="
         flex
         min-h-[calc(100vh-9rem)]
+        max-h-[calc(100vh-9rem)]
         flex-col
         overflow-hidden
         rounded-3xl
@@ -60,55 +65,54 @@ export function TopicCard({
           {category}
         </Badge>
 
-        {onShare && (
-          <button
-            onClick={onShare}
-            aria-label="Share Topic"
+        <div className="flex items-center gap-4">
+
+          <span
             className="
               text-text-muted
-              hover:text-text-primary
-              transition-colors
-            "
-          >
-            <Share2 className="h-5 w-5" />
-          </button>
-        )}
-
-      </div>
-
-      {/* Content */}
-
-      <div className="flex flex-1 flex-col justify-center">
-
-        {!isQuestion && (
-          <p
-            className="
-              text-text-muted
-              mb-6
-              text-center
               text-xs
               uppercase
-              tracking-[0.25em]
+              tracking-wider
             "
           >
             {title}
-          </p>
-        )}
+          </span>
 
+          {onShare && (
+            <button
+              onClick={onShare}
+              className="
+                text-text-muted
+                hover:text-text-primary
+                transition-colors
+              "
+            >
+              <Share2 className="h-5 w-5" />
+            </button>
+          )}
+
+        </div>
+
+      </div>
+
+      {/* Main Content */}
+
+      <div
+        className="
+          flex-1
+          overflow-y-auto
+          py-8
+        "
+      >
         <div
           className={cn(
-            'mx-auto max-w-3xl text-center',
+            'mx-auto text-center',
 
-            isQuestion &&
-              'max-w-2xl',
-
-            (isExplanation ||
-              isCatechism ||
-              isScripture) &&
-              'max-w-4xl'
+            isQuestion
+              ? 'max-w-2xl'
+              : 'max-w-3xl'
           )}
         >
-
           <h1
             className={cn(
               'text-text-primary leading-tight',
@@ -117,26 +121,28 @@ export function TopicCard({
               isQuestion &&
                 'text-4xl font-extrabold md:text-6xl',
 
-              // Short Answer
+              // Answer
               isAnswer &&
-                'text-2xl font-semibold md:text-3xl',
+                'text-xl font-semibold md:text-2xl',
 
               // Explanation
               isExplanation &&
-                'text-xl font-medium md:text-2xl',
+                'text-lg font-medium md:text-xl',
 
               // Catechism
               isCatechism &&
-                'text-lg font-normal md:text-xl',
+                'text-base font-normal md:text-lg',
 
               // Scripture
-              isScripture &&
-                'text-xl font-medium italic md:text-2xl'
+              !isQuestion &&
+                !isAnswer &&
+                !isExplanation &&
+                !isCatechism &&
+                'text-lg italic md:text-xl'
             )}
           >
             {content}
           </h1>
-
         </div>
 
         {reference && (
@@ -159,7 +165,6 @@ export function TopicCard({
 
           </div>
         )}
-
       </div>
 
     </Card>

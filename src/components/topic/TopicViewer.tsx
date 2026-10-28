@@ -307,12 +307,13 @@ export function TopicViewer({
           }}
         >
           <TopicCard
-            category={topic.category}
-            title={slide.title}
-            content={slide.content}
-            reference={slide.reference}
-            onShare={shareTopic}
-          />
+  type={slide.type}
+  category={topic.category}
+  title={slide.title}
+  content={slide.content}
+  reference={slide.reference}
+  onShare={shareTopic}
+/>
         </motion.div>
 
       </AnimatePresence>
