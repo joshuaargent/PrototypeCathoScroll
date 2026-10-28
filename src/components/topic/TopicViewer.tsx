@@ -2,12 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Share2 } from 'lucide-react';
 
 import { Topic } from '@/types';
 import { getTopicSlides } from '@/lib/topicSlides';
 
 import { TopicCard } from './TopicCard';
 import { TopicProgress } from './TopicProgress';
+
+import { Button } from '@/components/ui/Button';
 
 interface TopicViewerProps {
   topic: Topic;
@@ -17,11 +20,11 @@ interface TopicViewerProps {
 }
 
 type Direction =
-  | -2 // topic up
-  | -1 // slide left
+  | -2
+  | -1
   | 0
-  | 1 // slide right
-  | 2; // topic down
+  | 1
+  | 2;
 
 export function TopicViewer({
   topic,
@@ -39,12 +42,24 @@ export function TopicViewer({
   const slide = slides[slideIndex];
 
   // ----------------------------------
+  // Reset When Topic Changes
+  // ----------------------------------
+
+  useEffect(() => {
+    setSlideIndex(0);
+  }, [topic.id]);
+
+  // ----------------------------------
   // Horizontal Navigation
   // ----------------------------------
 
   const nextSlide = () => {
-    if (slideIndex >= slides.length - 1)
+    if (slideIndex >= slides.length - 1) {
+      setDirection(2);
+      setSlideIndex(0);
+      onNextTopic?.();
       return;
+    }
 
     setDirection(1);
 
@@ -52,7 +67,12 @@ export function TopicViewer({
   };
 
   const previousSlide = () => {
-    if (slideIndex <= 0) return;
+    if (slideIndex <= 0) {
+      setDirection(-2);
+      setSlideIndex(0);
+      onPreviousTopic?.();
+      return;
+    }
 
     setDirection(-1);
 
@@ -65,22 +85,45 @@ export function TopicViewer({
 
   const nextTopic = () => {
     setDirection(2);
-
     setSlideIndex(0);
-
     onNextTopic?.();
   };
 
   const previousTopic = () => {
     setDirection(-2);
-
     setSlideIndex(0);
-
     onPreviousTopic?.();
   };
 
   // ----------------------------------
-  // Keyboard Support
+  // Share Topic
+  // ----------------------------------
+
+  const shareTopic = async () => {
+    const url =
+      typeof window !== 'undefined'
+        ? `${window.location.origin}/topic/${topic.slug}`
+        : '';
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: topic.question,
+          text: 'Learn Catholic teaching one swipe at a time.',
+          url,
+        });
+
+        return;
+      }
+
+      await navigator.clipboard.writeText(url);
+    } catch {
+      // user cancelled share
+    }
+  };
+
+  // ----------------------------------
+  // Keyboard Navigation
   // ----------------------------------
 
   useEffect(() => {
@@ -139,21 +182,19 @@ export function TopicViewer({
           key={`${topic.id}-${slideIndex}`}
 
           drag
+
           dragMomentum={false}
-          dragElastic={0.12}
+          dragElastic={0.22}
 
           style={{
             touchAction: 'none',
           }}
 
           whileDrag={{
-            scale: 0.985,
+            scale: 0.97,
           }}
 
           onDragEnd={(event, info) => {
-            const horizontalThreshold = 90;
-            const verticalThreshold = 120;
-
             const absX = Math.abs(
               info.offset.x
             );
@@ -162,40 +203,45 @@ export function TopicViewer({
               info.offset.y
             );
 
+            const velocityX = Math.abs(
+              info.velocity.x
+            );
+
+            const velocityY = Math.abs(
+              info.velocity.y
+            );
+
             const horizontalGesture =
               absX > absY;
 
             if (horizontalGesture) {
-              if (
-                info.offset.x <
-                -horizontalThreshold
-              ) {
-                nextSlide();
-                return;
+              const fastSwipe =
+                velocityX > 500;
+
+              const farSwipe =
+                absX > 60;
+
+              if (fastSwipe || farSwipe) {
+                if (info.offset.x < 0) {
+                  nextSlide();
+                } else {
+                  previousSlide();
+                }
               }
 
-              if (
-                info.offset.x >
-                horizontalThreshold
-              ) {
-                previousSlide();
-                return;
-              }
+              return;
             }
 
-            if (!horizontalGesture) {
-              if (
-                info.offset.y <
-                -verticalThreshold
-              ) {
-                nextTopic();
-                return;
-              }
+            const fastVertical =
+              velocityY > 600;
 
-              if (
-                info.offset.y >
-                verticalThreshold
-              ) {
+            const farVertical =
+              absY > 85;
+
+            if (fastVertical || farVertical) {
+              if (info.offset.y < 0) {
+                nextTopic();
+              } else {
                 previousTopic();
               }
             }
@@ -244,8 +290,8 @@ export function TopicViewer({
           }}
 
           transition={{
-            duration: 0.22,
-            ease: [0.22, 1, 0.36, 1],
+            duration: 0.18,
+            ease: 'easeOut',
           }}
         >
           <TopicCard
@@ -258,21 +304,14 @@ export function TopicViewer({
 
       </AnimatePresence>
 
-      <div
-        className="
-          text-text-muted
-          mt-6
-          flex
-          items-center
-          justify-center
-          gap-6
-          text-xs
-          uppercase
-          tracking-wider
-        "
-      >
-        <span>↔ Explore Topic</span>
-        <span>↕ Change Question</span>
+      <div className="mt-6 flex justify-center">
+        <Button
+          variant="ghost"
+          onClick={shareTopic}
+          leftIcon={<Share2 className="h-4 w-4" />}
+        >
+          Share Topic
+        </Button>
       </div>
 
     </div>
