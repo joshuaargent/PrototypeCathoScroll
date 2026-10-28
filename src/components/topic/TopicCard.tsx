@@ -44,22 +44,22 @@ export function TopicCard({
         return 'text-3xl md:text-5xl font-extrabold';
 
       case 'answer':
-        return contentLength > 160
+        return contentLength > 180
           ? 'text-xl md:text-2xl font-semibold'
           : 'text-2xl md:text-4xl font-semibold';
 
       case 'explanation':
-        return contentLength > 250
+        return contentLength > 300
           ? 'text-base md:text-lg font-medium'
-          : 'text-lg md:text-2xl font-medium';
+          : 'text-lg md:text-xl font-medium';
 
       case 'catechism':
-        return contentLength > 250
+        return contentLength > 300
           ? 'text-sm md:text-base'
           : 'text-base md:text-lg';
 
       case 'scripture':
-        return contentLength > 250
+        return contentLength > 220
           ? 'text-base md:text-lg italic'
           : 'text-lg md:text-xl italic';
 
@@ -72,11 +72,12 @@ export function TopicCard({
     <Card
       padding="lg"
       className="
+        h-[calc(100vh-9rem)]
         flex
-        min-h-[calc(100vh-9rem)]
         flex-col
         rounded-3xl
         shadow-lg
+        overflow-hidden
       "
     >
       {/* Header */}
@@ -128,14 +129,14 @@ export function TopicCard({
               : 'max-w-4xl'
           )}
         >
-          <h1
+          <div
             className={cn(
               'text-text-primary leading-tight',
               contentClasses
             )}
           >
             {content}
-          </h1>
+          </div>
 
           {reference && (
             <div className="mt-8">
