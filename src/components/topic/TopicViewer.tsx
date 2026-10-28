@@ -2,15 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Share2 } from 'lucide-react';
 
 import { Topic } from '@/types';
 import { getTopicSlides } from '@/lib/topicSlides';
 
 import { TopicCard } from './TopicCard';
 import { TopicProgress } from './TopicProgress';
-
-import { Button } from '@/components/ui/Button';
 
 interface TopicViewerProps {
   topic: Topic;
@@ -54,10 +51,15 @@ export function TopicViewer({
   // ----------------------------------
 
   const nextSlide = () => {
+    // Last card -> next topic
+
     if (slideIndex >= slides.length - 1) {
       setDirection(2);
+
       setSlideIndex(0);
+
       onNextTopic?.();
+
       return;
     }
 
@@ -67,10 +69,15 @@ export function TopicViewer({
   };
 
   const previousSlide = () => {
+    // First card -> previous topic
+
     if (slideIndex <= 0) {
       setDirection(-2);
+
       setSlideIndex(0);
+
       onPreviousTopic?.();
+
       return;
     }
 
@@ -85,13 +92,17 @@ export function TopicViewer({
 
   const nextTopic = () => {
     setDirection(2);
+
     setSlideIndex(0);
+
     onNextTopic?.();
   };
 
   const previousTopic = () => {
     setDirection(-2);
+
     setSlideIndex(0);
+
     onPreviousTopic?.();
   };
 
@@ -109,7 +120,8 @@ export function TopicViewer({
       if (navigator.share) {
         await navigator.share({
           title: topic.question,
-          text: 'Learn Catholic teaching one swipe at a time.',
+          text:
+            'Learn Catholic teaching one swipe at a time.',
           url,
         });
 
@@ -118,12 +130,12 @@ export function TopicViewer({
 
       await navigator.clipboard.writeText(url);
     } catch {
-      // user cancelled share
+      // User cancelled
     }
   };
 
   // ----------------------------------
-  // Keyboard Navigation
+  // Keyboard Support
   // ----------------------------------
 
   useEffect(() => {
@@ -162,10 +174,6 @@ export function TopicViewer({
     };
   }, [slideIndex]);
 
-  // ----------------------------------
-  // Render
-  // ----------------------------------
-
   return (
     <div className="container py-6">
 
@@ -184,7 +192,8 @@ export function TopicViewer({
           drag
 
           dragMomentum={false}
-          dragElastic={0.22}
+
+          dragElastic={0.35}
 
           style={{
             touchAction: 'none',
@@ -216,10 +225,10 @@ export function TopicViewer({
 
             if (horizontalGesture) {
               const fastSwipe =
-                velocityX > 500;
+                velocityX > 250;
 
               const farSwipe =
-                absX > 60;
+                absX > 35;
 
               if (fastSwipe || farSwipe) {
                 if (info.offset.x < 0) {
@@ -233,12 +242,15 @@ export function TopicViewer({
             }
 
             const fastVertical =
-              velocityY > 600;
+              velocityY > 300;
 
             const farVertical =
-              absY > 85;
+              absY > 50;
 
-            if (fastVertical || farVertical) {
+            if (
+              fastVertical ||
+              farVertical
+            ) {
               if (info.offset.y < 0) {
                 nextTopic();
               } else {
@@ -252,16 +264,16 @@ export function TopicViewer({
 
             x:
               direction === 1
-                ? 140
+                ? 120
                 : direction === -1
-                  ? -140
+                  ? -120
                   : 0,
 
             y:
               direction === 2
-                ? 220
+                ? 180
                 : direction === -2
-                  ? -220
+                  ? -180
                   : 0,
           }}
 
@@ -276,21 +288,21 @@ export function TopicViewer({
 
             x:
               direction === 1
-                ? -140
+                ? -120
                 : direction === -1
-                  ? 140
+                  ? 120
                   : 0,
 
             y:
               direction === 2
-                ? -220
+                ? -180
                 : direction === -2
-                  ? 220
+                  ? 180
                   : 0,
           }}
 
           transition={{
-            duration: 0.18,
+            duration: 0.16,
             ease: 'easeOut',
           }}
         >
@@ -299,20 +311,11 @@ export function TopicViewer({
             title={slide.title}
             content={slide.content}
             reference={slide.reference}
+            onShare={shareTopic}
           />
         </motion.div>
 
       </AnimatePresence>
-
-      <div className="mt-6 flex justify-center">
-        <Button
-          variant="ghost"
-          onClick={shareTopic}
-          leftIcon={<Share2 className="h-4 w-4" />}
-        >
-          Share Topic
-        </Button>
-      </div>
 
     </div>
   );
