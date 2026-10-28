@@ -11,7 +11,6 @@ import { TopicProgress } from './TopicProgress';
 
 interface TopicViewerProps {
   topic: Topic;
-
   onNextTopic?: () => void;
   onPreviousTopic?: () => void;
 }
@@ -51,8 +50,6 @@ export function TopicViewer({
   // ----------------------------------
 
   const nextSlide = () => {
-    // Last card -> next topic
-
     if (slideIndex >= slides.length - 1) {
       setDirection(2);
 
@@ -69,8 +66,6 @@ export function TopicViewer({
   };
 
   const previousSlide = () => {
-    // First card -> previous topic
-
     if (slideIndex <= 0) {
       setDirection(-2);
 
@@ -130,7 +125,7 @@ export function TopicViewer({
 
       await navigator.clipboard.writeText(url);
     } catch {
-      // User cancelled
+      // User cancelled share
     }
   };
 
@@ -184,23 +179,23 @@ export function TopicViewer({
         />
       </div>
 
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
 
         <motion.div
           key={`${topic.id}-${slideIndex}`}
 
           drag
 
-          dragMomentum={false}
+          dragMomentum
 
-          dragElastic={0.35}
+          dragElastic={0.15}
 
           style={{
             touchAction: 'none',
           }}
 
           whileDrag={{
-            scale: 0.97,
+            scale: 0.985,
           }}
 
           onDragEnd={(event, info) => {
@@ -225,10 +220,10 @@ export function TopicViewer({
 
             if (horizontalGesture) {
               const fastSwipe =
-                velocityX > 250;
+                velocityX > 100;
 
               const farSwipe =
-                absX > 35;
+                absX > 20;
 
               if (fastSwipe || farSwipe) {
                 if (info.offset.x < 0) {
@@ -242,10 +237,10 @@ export function TopicViewer({
             }
 
             const fastVertical =
-              velocityY > 300;
+              velocityY > 150;
 
             const farVertical =
-              absY > 50;
+              absY > 25;
 
             if (
               fastVertical ||
@@ -264,16 +259,16 @@ export function TopicViewer({
 
             x:
               direction === 1
-                ? 120
+                ? 50
                 : direction === -1
-                  ? -120
+                  ? -50
                   : 0,
 
             y:
               direction === 2
-                ? 180
+                ? 80
                 : direction === -2
-                  ? -180
+                  ? -80
                   : 0,
           }}
 
@@ -288,32 +283,32 @@ export function TopicViewer({
 
             x:
               direction === 1
-                ? -120
+                ? -50
                 : direction === -1
-                  ? 120
+                  ? 50
                   : 0,
 
             y:
               direction === 2
-                ? -180
+                ? -80
                 : direction === -2
-                  ? 180
+                  ? 80
                   : 0,
           }}
 
           transition={{
-            duration: 0.16,
-            ease: 'easeOut',
+            duration: 0.08,
+            ease: 'linear',
           }}
         >
           <TopicCard
-  type={slide.type}
-  category={topic.category}
-  title={slide.title}
-  content={slide.content}
-  reference={slide.reference}
-  onShare={shareTopic}
-/>
+            type={slide.type}
+            category={topic.category}
+            title={slide.title}
+            content={slide.content}
+            reference={slide.reference}
+            onShare={shareTopic}
+          />
         </motion.div>
 
       </AnimatePresence>
