@@ -21,25 +21,52 @@ interface TopicCardProps {
 }
 
 export function TopicCard({
+  type,
   category,
   title,
   content,
   reference,
   onShare,
 }: TopicCardProps) {
-  const type = title.toLowerCase();
+  const contentLength = content.length;
 
-  const isQuestion =
-    type.includes('question');
+  const contentClasses = (() => {
+    switch (type) {
+      case 'question':
+        if (contentLength < 60) {
+          return 'text-5xl md:text-7xl font-extrabold';
+        }
 
-  const isAnswer =
-    type.includes('answer');
+        if (contentLength < 100) {
+          return 'text-4xl md:text-6xl font-extrabold';
+        }
 
-  const isExplanation =
-    type.includes('explanation');
+        return 'text-3xl md:text-5xl font-extrabold';
 
-  const isCatechism =
-    type.includes('catechism');
+      case 'answer':
+        return contentLength > 160
+          ? 'text-xl md:text-2xl font-semibold'
+          : 'text-2xl md:text-4xl font-semibold';
+
+      case 'explanation':
+        return contentLength > 250
+          ? 'text-base md:text-lg font-medium'
+          : 'text-lg md:text-2xl font-medium';
+
+      case 'catechism':
+        return contentLength > 250
+          ? 'text-sm md:text-base'
+          : 'text-base md:text-lg';
+
+      case 'scripture':
+        return contentLength > 250
+          ? 'text-base md:text-lg italic'
+          : 'text-lg md:text-xl italic';
+
+      default:
+        return 'text-lg';
+    }
+  })();
 
   return (
     <Card
@@ -47,9 +74,7 @@ export function TopicCard({
       className="
         flex
         min-h-[calc(100vh-9rem)]
-        max-h-[calc(100vh-9rem)]
         flex-col
-        overflow-hidden
         rounded-3xl
         shadow-lg
       "
@@ -57,16 +82,14 @@ export function TopicCard({
       {/* Header */}
 
       <div className="flex items-center justify-between">
-
         <Badge
           variant="accent"
-          size={isQuestion ? 'lg' : 'md'}
+          size={type === 'question' ? 'lg' : 'md'}
         >
           {category}
         </Badge>
 
         <div className="flex items-center gap-4">
-
           <span
             className="
               text-text-muted
@@ -81,6 +104,7 @@ export function TopicCard({
           {onShare && (
             <button
               onClick={onShare}
+              aria-label="Share topic"
               className="
                 text-text-muted
                 hover:text-text-primary
@@ -90,83 +114,49 @@ export function TopicCard({
               <Share2 className="h-5 w-5" />
             </button>
           )}
-
         </div>
-
       </div>
 
-      {/* Main Content */}
+      {/* Content */}
 
-      <div
-        className="
-          flex-1
-          overflow-y-auto
-          py-8
-        "
-      >
+      <div className="flex flex-1 items-center justify-center">
         <div
           className={cn(
             'mx-auto text-center',
-
-            isQuestion
+            type === 'question'
               ? 'max-w-2xl'
-              : 'max-w-3xl'
+              : 'max-w-4xl'
           )}
         >
           <h1
             className={cn(
               'text-text-primary leading-tight',
-
-              // Question
-              isQuestion &&
-                'text-4xl font-extrabold md:text-6xl',
-
-              // Answer
-              isAnswer &&
-                'text-xl font-semibold md:text-2xl',
-
-              // Explanation
-              isExplanation &&
-                'text-lg font-medium md:text-xl',
-
-              // Catechism
-              isCatechism &&
-                'text-base font-normal md:text-lg',
-
-              // Scripture
-              !isQuestion &&
-                !isAnswer &&
-                !isExplanation &&
-                !isCatechism &&
-                'text-lg italic md:text-xl'
+              contentClasses
             )}
           >
             {content}
           </h1>
+
+          {reference && (
+            <div className="mt-8">
+              <span
+                className="
+                  bg-bg-secondary
+                  text-text-secondary
+                  border-border
+                  rounded-full
+                  border
+                  px-4
+                  py-2
+                  text-sm
+                "
+              >
+                {reference}
+              </span>
+            </div>
+          )}
         </div>
-
-        {reference && (
-          <div className="mt-8 flex justify-center">
-
-            <span
-              className="
-                bg-bg-secondary
-                text-text-secondary
-                border-border
-                rounded-full
-                border
-                px-4
-                py-2
-                text-sm
-              "
-            >
-              {reference}
-            </span>
-
-          </div>
-        )}
       </div>
-
     </Card>
   );
 }
