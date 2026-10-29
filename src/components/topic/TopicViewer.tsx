@@ -13,6 +13,8 @@ import {
   useState,
 } from 'react';
 
+import { flushSync } from 'react-dom';
+
 import { Topic } from '@/types';
 import { getTopicSlides } from '@/lib/topicSlides';
 
@@ -75,8 +77,9 @@ export function TopicViewer({
   );
 
   useEffect(() => {
-    setSlideIndex(0);
-  }, [topicIndex]);
+  x.set(0);
+  y.set(0);
+}, [slideIndex, topicIndex, x, y]);
 
   const currentSlide =
     slides[slideIndex];
@@ -116,68 +119,71 @@ export function TopicViewer({
   };
 
   const springHome = () => {
-    animate(x, 0, {
-      type: 'spring',
-      stiffness: 1000,
-      damping: 70,
-    });
+  animate(x, 0, {
+    type: 'spring',
+    stiffness: 1400,
+    damping: 90,
+  });
 
-    animate(y, 0, {
-      type: 'spring',
-      stiffness: 1000,
-      damping: 70,
-    });
-  };
+  animate(y, 0, {
+    type: 'spring',
+    stiffness: 1400,
+    damping: 90,
+  });
+};
 
   const moveSlide = async (
-    direction:
-      | 'next'
-      | 'previous'
-  ) => {
-    const width =
-      window.innerWidth;
+  direction:
+    | 'next'
+    | 'previous'
+) => {
+  const width =
+    window.innerWidth;
 
-    await animate(
-      x,
-      direction === 'next'
-        ? -width
-        : width,
-      {
-        duration: 0.14,
-        ease: 'easeOut',
-      }
-    );
+  await animate(
+    x,
+    direction === 'next'
+      ? -width
+      : width,
+    {
+      duration: 0.1,
+      ease: 'easeOut',
+    }
+  );
 
+  x.set(0);
+
+  flushSync(() => {
     setSlideIndex(prev =>
       direction === 'next'
         ? prev + 1
         : prev - 1
     );
-
-    requestAnimationFrame(() => {
-      x.set(0);
-    });
-  };
+  });
+};
 
   const moveTopic = async (
-    direction:
-      | 'next'
-      | 'previous'
-  ) => {
-    const height =
-      window.innerHeight;
+  direction:
+    | 'next'
+    | 'previous'
+) => {
+  const height =
+    window.innerHeight;
 
-    await animate(
-      y,
-      direction === 'next'
-        ? -height
-        : height,
-      {
-        duration: 0.14,
-        ease: 'easeOut',
-      }
-    );
+  await animate(
+    y,
+    direction === 'next'
+      ? -height
+      : height,
+    {
+      duration: 0.1,
+      ease: 'easeOut',
+    }
+  );
 
+  y.set(0);
+
+  flushSync(() => {
     setSlideIndex(0);
 
     if (direction === 'next') {
@@ -185,11 +191,8 @@ export function TopicViewer({
     } else {
       onPreviousTopic?.();
     }
-
-    requestAnimationFrame(() => {
-      y.set(0);
-    });
-  };
+  });
+};
 
   const handlePointerDown = (
     event: React.PointerEvent
@@ -219,9 +222,9 @@ export function TopicViewer({
 
     if (!axis) {
       if (
-        Math.abs(deltaX) > 4 ||
-        Math.abs(deltaY) > 4
-      ) {
+  Math.abs(deltaX) > 2 ||
+  Math.abs(deltaY) > 2
+) {
         setAxis(
           Math.abs(deltaX) >
             Math.abs(deltaY)
@@ -260,6 +263,9 @@ export function TopicViewer({
       const dy =
         currentRef.current.y;
 
+      const absDx = Math.abs(dx);
+      const absDy = Math.abs(dy);
+
       const width =
         window.innerWidth;
 
@@ -267,31 +273,36 @@ export function TopicViewer({
         window.innerHeight;
 
       if (axis === 'x') {
-        const threshold =
-          width * 0.12;
+  const threshold =
+    width * 0.08;
 
-        if (
-          dx < -threshold &&
-          nextSlide
-        ) {
-          await moveSlide(
-            'next'
-          );
-        } else if (
-          dx > threshold &&
-          previousSlide
-        ) {
-          await moveSlide(
-            'previous'
-          );
-        } else {
-          springHome();
-        }
-      }
+  const commit =
+    absDx > threshold;
+
+  if (
+    commit &&
+    dx < 0 &&
+    nextSlide
+  ) {
+    await moveSlide(
+      'next'
+    );
+  } else if (
+    commit &&
+    dx > 0 &&
+    previousSlide
+  ) {
+    await moveSlide(
+      'previous'
+    );
+  } else {
+    springHome();
+  }
+}
 
       if (axis === 'y') {
         const threshold =
-          height * 0.1;
+          height * 0.08;
 
         if (
           dy < -threshold &&
@@ -358,11 +369,12 @@ export function TopicViewer({
             handlePointerUp
           }
           className="
-            absolute
-            inset-0
-            select-none
-            will-change-transform
-          "
+  absolute
+  inset-0
+  select-none
+  will-change-transform
+  transform-gpu
+"
         >
           {/* TOP */}
 
