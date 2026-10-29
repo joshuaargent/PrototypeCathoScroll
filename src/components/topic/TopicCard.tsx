@@ -119,12 +119,10 @@ export function TopicCard({
               onClick={onShare}
               aria-label="Share topic"
               className="
-  text-text-muted
-  hover:text-text-primary
-  transition-colors
-  p-2
-  -m-2
-"
+                text-text-muted
+                hover:text-text-primary
+                transition-colors
+              "
             >
               <Share2 className="h-5 w-5" />
             </button>
