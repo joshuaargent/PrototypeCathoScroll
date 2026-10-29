@@ -1,7 +1,17 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
+import {
+  animate,
+  motion,
+  useMotionValue,
+} from 'framer-motion';
+
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { Topic } from '@/types';
 import { getTopicSlides } from '@/lib/topicSlides';
@@ -29,6 +39,22 @@ export function TopicViewer({
   const [axis, setAxis] = useState<
     'x' | 'y' | null
   >(null);
+
+  const [isDragging, setIsDragging] =
+    useState(false);
+
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const startRef = useRef({
+    x: 0,
+    y: 0,
+  });
+
+  const currentRef = useRef({
+    x: 0,
+    y: 0,
+  });
 
   const currentTopic =
     topics[topicIndex];
@@ -61,7 +87,8 @@ export function TopicViewer({
       : null;
 
   const nextSlide =
-    slideIndex < slides.length - 1
+    slideIndex <
+    slides.length - 1
       ? slides[slideIndex + 1]
       : null;
 
@@ -88,6 +115,227 @@ export function TopicViewer({
     } catch {}
   };
 
+  const springHome = () => {
+    animate(x, 0, {
+      type: 'spring',
+      stiffness: 1200,
+      damping: 80,
+    });
+
+    animate(y, 0, {
+      type: 'spring',
+      stiffness: 1200,
+      damping: 80,
+    });
+  };
+
+  const moveSlide = async (
+    direction:
+      | 'next'
+      | 'previous'
+  ) => {
+    const width =
+      window.innerWidth;
+
+    await animate(
+      x,
+      direction === 'next'
+        ? -width
+        : width,
+      {
+        duration: 0.16,
+        ease: 'easeOut',
+      }
+    );
+
+    setSlideIndex(prev =>
+      direction === 'next'
+        ? prev + 1
+        : prev - 1
+    );
+
+    x.set(
+      direction === 'next'
+        ? width
+        : -width
+    );
+
+    animate(x, 0, {
+      type: 'spring',
+      stiffness: 1200,
+      damping: 80,
+    });
+  };
+
+  const moveTopic = async (
+    direction:
+      | 'next'
+      | 'previous'
+  ) => {
+    const height =
+      window.innerHeight;
+
+    await animate(
+      y,
+      direction === 'next'
+        ? -height
+        : height,
+      {
+        duration: 0.16,
+        ease: 'easeOut',
+      }
+    );
+
+    setSlideIndex(0);
+
+    if (direction === 'next') {
+      onNextTopic?.();
+    } else {
+      onPreviousTopic?.();
+    }
+
+    y.set(
+      direction === 'next'
+        ? height
+        : -height
+    );
+
+    animate(y, 0, {
+      type: 'spring',
+      stiffness: 1200,
+      damping: 80,
+    });
+  };
+
+  const handlePointerDown = (
+    event: React.PointerEvent
+  ) => {
+    setIsDragging(true);
+
+    setAxis(null);
+
+    startRef.current = {
+      x: event.clientX,
+      y: event.clientY,
+    };
+  };
+
+  const handlePointerMove = (
+    event: React.PointerEvent
+  ) => {
+    if (!isDragging) return;
+
+    const deltaX =
+      event.clientX -
+      startRef.current.x;
+
+    const deltaY =
+      event.clientY -
+      startRef.current.y;
+
+    if (!axis) {
+      if (
+        Math.abs(deltaX) > 6 ||
+        Math.abs(deltaY) > 6
+      ) {
+        setAxis(
+          Math.abs(deltaX) >
+            Math.abs(deltaY)
+            ? 'x'
+            : 'y'
+        );
+      }
+
+      return;
+    }
+
+    if (axis === 'x') {
+      x.set(deltaX);
+      y.set(0);
+
+      currentRef.current.x =
+        deltaX;
+    }
+
+    if (axis === 'y') {
+      y.set(deltaY);
+      x.set(0);
+
+      currentRef.current.y =
+        deltaY;
+    }
+  };
+
+  const handlePointerUp =
+    async () => {
+      setIsDragging(false);
+
+      const dx =
+        currentRef.current.x;
+
+      const dy =
+        currentRef.current.y;
+
+      const width =
+        window.innerWidth;
+
+      const height =
+        window.innerHeight;
+
+      if (axis === 'x') {
+        const threshold =
+          width * 0.15;
+
+        if (
+          dx < -threshold &&
+          nextSlide
+        ) {
+          await moveSlide(
+            'next'
+          );
+        } else if (
+          dx > threshold &&
+          previousSlide
+        ) {
+          await moveSlide(
+            'previous'
+          );
+        } else {
+          springHome();
+        }
+      }
+
+      if (axis === 'y') {
+        const threshold =
+          height * 0.12;
+
+        if (
+          dy < -threshold &&
+          nextTopic
+        ) {
+          await moveTopic(
+            'next'
+          );
+        } else if (
+          dy > threshold &&
+          previousTopic
+        ) {
+          await moveTopic(
+            'previous'
+          );
+        } else {
+          springHome();
+        }
+      }
+
+      currentRef.current = {
+        x: 0,
+        y: 0,
+      };
+
+      setAxis(null);
+    };
+
   return (
     <div className="h-full">
 
@@ -106,134 +354,35 @@ export function TopicViewer({
         "
       >
         <motion.div
-          drag
-
-          dragMomentum={false}
-
-          dragElastic={0.05}
-
-          dragTransition={{
-            bounceStiffness: 1200,
-            bounceDamping: 50,
-          }}
-
           style={{
+            x,
+            y,
             width: '100%',
             height: '100%',
             touchAction: 'none',
           }}
-
-          onDrag={(event, info) => {
-            if (axis) return;
-
-            const absX = Math.abs(
-              info.offset.x
-            );
-
-            const absY = Math.abs(
-              info.offset.y
-            );
-
-            if (absX < 10 && absY < 10)
-              return;
-
-            setAxis(
-              absX > absY ? 'x' : 'y'
-            );
-          }}
-
-          whileDrag={{
-            scale: 0.998,
-          }}
-
-          onDragEnd={(event, info) => {
-            const absX = Math.abs(
-              info.offset.x
-            );
-
-            const absY = Math.abs(
-              info.offset.y
-            );
-
-            const velocityX =
-              Math.abs(
-                info.velocity.x
-              );
-
-            const velocityY =
-              Math.abs(
-                info.velocity.y
-              );
-
-            if (axis === 'x') {
-              const trigger =
-                absX > 80 ||
-                velocityX > 800;
-
-              if (trigger) {
-                if (
-                  info.offset.x < 0 &&
-                  nextSlide
-                ) {
-                  setSlideIndex(
-                    prev => prev + 1
-                  );
-                }
-
-                if (
-                  info.offset.x > 0 &&
-                  previousSlide
-                ) {
-                  setSlideIndex(
-                    prev => prev - 1
-                  );
-                }
-              }
-            }
-
-            if (axis === 'y') {
-              const trigger =
-                absY > 80 ||
-                velocityY > 800;
-
-              if (trigger) {
-                if (
-                  info.offset.y < 0 &&
-                  nextTopic
-                ) {
-                  setSlideIndex(0);
-                  onNextTopic?.();
-                }
-
-                if (
-                  info.offset.y > 0 &&
-                  previousTopic
-                ) {
-                  setSlideIndex(0);
-                  onPreviousTopic?.();
-                }
-              }
-            }
-
-            setAxis(null);
-          }}
-
+          onPointerDown={
+            handlePointerDown
+          }
+          onPointerMove={
+            handlePointerMove
+          }
+          onPointerUp={
+            handlePointerUp
+          }
+          onPointerCancel={
+            handlePointerUp
+          }
           className="
             absolute
             inset-0
+            select-none
           "
         >
-          {/* ABOVE */}
+          {/* TOP */}
 
           {previousTopic && (
-            <div
-              className="
-                absolute
-                inset-x-0
-                -top-full
-                h-full
-              "
-            >
+            <div className="absolute inset-x-0 top-[-100%] h-full">
               <TopicCard
                 type="question"
                 category={
@@ -250,14 +399,7 @@ export function TopicViewer({
           {/* LEFT */}
 
           {previousSlide && (
-            <div
-              className="
-                absolute
-                inset-y-0
-                -left-full
-                w-full
-              "
-            >
+            <div className="absolute inset-y-0 left-[-100%] w-full">
               <TopicCard
                 type={
                   previousSlide.type
@@ -280,12 +422,7 @@ export function TopicViewer({
 
           {/* CENTER */}
 
-          <div
-            className="
-              absolute
-              inset-0
-            "
-          >
+          <div className="absolute inset-0">
             <TopicCard
               type={
                 currentSlide.type
@@ -302,23 +439,14 @@ export function TopicViewer({
               reference={
                 currentSlide.reference
               }
-              onShare={
-                shareTopic
-              }
+              onShare={shareTopic}
             />
           </div>
 
           {/* RIGHT */}
 
           {nextSlide && (
-            <div
-              className="
-                absolute
-                inset-y-0
-                left-full
-                w-full
-              "
-            >
+            <div className="absolute inset-y-0 left-[100%] w-full">
               <TopicCard
                 type={
                   nextSlide.type
@@ -339,17 +467,10 @@ export function TopicViewer({
             </div>
           )}
 
-          {/* BELOW */}
+          {/* BOTTOM */}
 
           {nextTopic && (
-            <div
-              className="
-                absolute
-                inset-x-0
-                top-full
-                h-full
-              "
-            >
+            <div className="absolute inset-x-0 top-[100%] h-full">
               <TopicCard
                 type="question"
                 category={
