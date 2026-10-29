@@ -53,4 +53,6 @@ export default async function TopicPage({
       {JSON.stringify(topic, null, 2)}
     </pre>
   </main>
+
 );
+}
