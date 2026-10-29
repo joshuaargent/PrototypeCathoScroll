@@ -1,7 +1,6 @@
 import { Share2 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/Badge';
-import { Card } from '@/components/ui/Card';
 
 import { cn } from '@/lib/utils';
 
@@ -67,16 +66,15 @@ export function TopicCard({
   })();
 
   return (
-    <Card
-      padding="lg"
+    <div
       className={cn(
         `
           h-[calc(100vh-9rem)]
+          w-full
+          px-8
+          py-8
           flex
           flex-col
-          overflow-hidden
-          rounded-3xl
-          shadow-lg
         `,
         type === 'question' &&
           'bg-accent-light/10'
@@ -85,6 +83,7 @@ export function TopicCard({
       {/* Header */}
 
       <div className="flex items-center justify-between">
+
         <Badge
           variant="accent"
           size={type === 'question' ? 'lg' : 'md'}
@@ -93,6 +92,7 @@ export function TopicCard({
         </Badge>
 
         <div className="flex items-center gap-4">
+
           <span
             className="
               text-text-muted
@@ -117,12 +117,15 @@ export function TopicCard({
               <Share2 className="h-5 w-5" />
             </button>
           )}
+
         </div>
+
       </div>
 
       {/* Content */}
 
       <div className="flex flex-1 items-center justify-center">
+
         <div
           className={cn(
             'mx-auto text-center',
@@ -131,6 +134,7 @@ export function TopicCard({
               : 'max-w-3xl'
           )}
         >
+
           <div
             className={cn(
               'text-text-primary leading-tight',
@@ -142,6 +146,7 @@ export function TopicCard({
 
           {reference && (
             <div className="mt-8">
+
               <span
                 className="
                   bg-bg-secondary
@@ -156,10 +161,14 @@ export function TopicCard({
               >
                 {reference}
               </span>
+
             </div>
           )}
+
         </div>
+
       </div>
-    </Card>
+
+    </div>
   );
 }

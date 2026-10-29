@@ -21,23 +21,36 @@ export function TopicFeed({
   const [topicIndex, setTopicIndex] =
     useState(0);
 
-  // Create initial shuffled feed
+  // ----------------------------------
+  // Initial Feed
+  // ----------------------------------
+
   useEffect(() => {
     setFeedTopics(shuffle(topics));
   }, [topics]);
 
+  // ----------------------------------
+  // Navigation
+  // ----------------------------------
+
   const nextTopic = () => {
     setTopicIndex(prev => {
-      const nextIndex = prev + 1;
+      const next = prev + 1;
 
-      // Reached end of feed
-      if (nextIndex >= feedTopics.length) {
-        setFeedTopics(shuffle(topics));
+      // Loop feed
+
+      if (
+        next >= feedTopics.length
+      ) {
+        const reshuffled =
+          shuffle(topics);
+
+        setFeedTopics(reshuffled);
 
         return 0;
       }
 
-      return nextIndex;
+      return next;
     });
   };
 
@@ -47,15 +60,22 @@ export function TopicFeed({
     );
   };
 
+  // ----------------------------------
+  // Loading
+  // ----------------------------------
+
   if (!feedTopics.length) {
     return null;
   }
 
   return (
     <TopicViewer
-      topic={feedTopics[topicIndex]}
+      topics={feedTopics}
+      topicIndex={topicIndex}
       onNextTopic={nextTopic}
-      onPreviousTopic={previousTopic}
+      onPreviousTopic={
+        previousTopic
+      }
     />
   );
 }

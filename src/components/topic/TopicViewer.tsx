@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
 
 import { Topic } from '@/types';
 import { getTopicSlides } from '@/lib/topicSlides';
@@ -10,198 +10,140 @@ import { TopicCard } from './TopicCard';
 import { TopicProgress } from './TopicProgress';
 
 interface TopicViewerProps {
-  topic: Topic;
+  topics: Topic[];
+  topicIndex: number;
+
   onNextTopic?: () => void;
   onPreviousTopic?: () => void;
 }
 
-type Direction =
-  | -2
-  | -1
-  | 0
-  | 1
-  | 2;
-
 export function TopicViewer({
-  topic,
+  topics,
+  topicIndex,
   onNextTopic,
   onPreviousTopic,
 }: TopicViewerProps) {
-  const slides = getTopicSlides(topic);
-
   const [slideIndex, setSlideIndex] =
     useState(0);
 
-  const [direction, setDirection] =
-    useState<Direction>(0);
+  const [axis, setAxis] = useState<
+    'x' | 'y' | null
+  >(null);
 
-  const slide = slides[slideIndex];
+  const currentTopic =
+    topics[topicIndex];
 
-  // ----------------------------------
-  // Reset When Topic Changes
-  // ----------------------------------
+  const previousTopic =
+    topicIndex > 0
+      ? topics[topicIndex - 1]
+      : null;
+
+  const nextTopic =
+    topicIndex < topics.length - 1
+      ? topics[topicIndex + 1]
+      : null;
+
+  const slides = useMemo(
+    () => getTopicSlides(currentTopic),
+    [currentTopic]
+  );
 
   useEffect(() => {
     setSlideIndex(0);
-  }, [topic.id]);
+  }, [topicIndex]);
 
-  // ----------------------------------
-  // Horizontal Navigation
-  // ----------------------------------
+  const currentSlide =
+    slides[slideIndex];
 
-  const nextSlide = () => {
-    if (slideIndex >= slides.length - 1) {
-      setDirection(2);
+  const previousSlide =
+    slideIndex > 0
+      ? slides[slideIndex - 1]
+      : null;
 
-      setSlideIndex(0);
-
-      onNextTopic?.();
-
-      return;
-    }
-
-    setDirection(1);
-
-    setSlideIndex(prev => prev + 1);
-  };
-
-  const previousSlide = () => {
-    if (slideIndex <= 0) {
-      setDirection(-2);
-
-      setSlideIndex(0);
-
-      onPreviousTopic?.();
-
-      return;
-    }
-
-    setDirection(-1);
-
-    setSlideIndex(prev => prev - 1);
-  };
-
-  // ----------------------------------
-  // Vertical Navigation
-  // ----------------------------------
-
-  const nextTopic = () => {
-    setDirection(2);
-
-    setSlideIndex(0);
-
-    onNextTopic?.();
-  };
-
-  const previousTopic = () => {
-    setDirection(-2);
-
-    setSlideIndex(0);
-
-    onPreviousTopic?.();
-  };
-
-  // ----------------------------------
-  // Share
-  // ----------------------------------
+  const nextSlide =
+    slideIndex < slides.length - 1
+      ? slides[slideIndex + 1]
+      : null;
 
   const shareTopic = async () => {
-    const url =
-      typeof window !== 'undefined'
-        ? `${window.location.origin}/topic/${topic.slug}`
-        : '';
-
     try {
+      const url =
+        typeof window !== 'undefined'
+          ? `${window.location.origin}/topic/${currentTopic.slug}`
+          : '';
+
       if (navigator.share) {
         await navigator.share({
-          title: topic.question,
-          text:
-            'Learn Catholic teaching one swipe at a time.',
+          title:
+            currentTopic.question,
           url,
         });
 
         return;
       }
 
-      await navigator.clipboard.writeText(url);
-    } catch {
-      // Ignore cancel
-    }
+      await navigator.clipboard.writeText(
+        url
+      );
+    } catch {}
   };
 
-  // ----------------------------------
-  // Keyboard Support
-  // ----------------------------------
-
-  useEffect(() => {
-    const handleKeyDown = (
-      event: KeyboardEvent
-    ) => {
-      switch (event.key) {
-        case 'ArrowRight':
-          nextSlide();
-          break;
-
-        case 'ArrowLeft':
-          previousSlide();
-          break;
-
-        case 'ArrowUp':
-          previousTopic();
-          break;
-
-        case 'ArrowDown':
-          nextTopic();
-          break;
-      }
-    };
-
-    window.addEventListener(
-      'keydown',
-      handleKeyDown
-    );
-
-    return () => {
-      window.removeEventListener(
-        'keydown',
-        handleKeyDown
-      );
-    };
-  }, [slideIndex]);
-
   return (
-    <div className="container py-6">
+    <div className="h-full">
 
-      <div className="mb-4">
+      <div className="px-6 pt-4">
         <TopicProgress
           current={slideIndex}
           total={slides.length}
         />
       </div>
 
-      <AnimatePresence>
-
+      <div
+        className="
+          relative
+          h-[calc(100vh-5rem)]
+          overflow-hidden
+        "
+      >
         <motion.div
-          key={`${topic.id}-${slideIndex}`}
-
           drag
 
           dragMomentum={false}
 
-          dragElastic={0.15}
+          dragElastic={0.05}
 
           dragTransition={{
-            bounceStiffness: 600,
-            bounceDamping: 30,
+            bounceStiffness: 1200,
+            bounceDamping: 50,
           }}
 
           style={{
+            width: '100%',
+            height: '100%',
             touchAction: 'none',
           }}
 
+          onDrag={(event, info) => {
+            if (axis) return;
+
+            const absX = Math.abs(
+              info.offset.x
+            );
+
+            const absY = Math.abs(
+              info.offset.y
+            );
+
+            if (absX < 10 && absY < 10)
+              return;
+
+            setAxis(
+              absX > absY ? 'x' : 'y'
+            );
+          }}
+
           whileDrag={{
-            scale: 0.98,
-            rotateZ: 0.5,
+            scale: 0.998,
           }}
 
           onDragEnd={(event, info) => {
@@ -213,112 +155,215 @@ export function TopicViewer({
               info.offset.y
             );
 
-            const velocityX = Math.abs(
-              info.velocity.x
-            );
+            const velocityX =
+              Math.abs(
+                info.velocity.x
+              );
 
-            const velocityY = Math.abs(
-              info.velocity.y
-            );
+            const velocityY =
+              Math.abs(
+                info.velocity.y
+              );
 
-            const horizontalGesture =
-              absX > absY;
+            if (axis === 'x') {
+              const trigger =
+                absX > 80 ||
+                velocityX > 800;
 
-            if (horizontalGesture) {
-              const fastSwipe =
-                velocityX > 100;
+              if (trigger) {
+                if (
+                  info.offset.x < 0 &&
+                  nextSlide
+                ) {
+                  setSlideIndex(
+                    prev => prev + 1
+                  );
+                }
 
-              const farSwipe =
-                absX > 20;
-
-              if (fastSwipe || farSwipe) {
-                if (info.offset.x < 0) {
-                  nextSlide();
-                } else {
-                  previousSlide();
+                if (
+                  info.offset.x > 0 &&
+                  previousSlide
+                ) {
+                  setSlideIndex(
+                    prev => prev - 1
+                  );
                 }
               }
-
-              return;
             }
 
-            const fastVertical =
-              velocityY > 150;
+            if (axis === 'y') {
+              const trigger =
+                absY > 80 ||
+                velocityY > 800;
 
-            const farVertical =
-              absY > 25;
+              if (trigger) {
+                if (
+                  info.offset.y < 0 &&
+                  nextTopic
+                ) {
+                  setSlideIndex(0);
+                  onNextTopic?.();
+                }
 
-            if (
-              fastVertical ||
-              farVertical
-            ) {
-              if (info.offset.y < 0) {
-                nextTopic();
-              } else {
-                previousTopic();
+                if (
+                  info.offset.y > 0 &&
+                  previousTopic
+                ) {
+                  setSlideIndex(0);
+                  onPreviousTopic?.();
+                }
               }
             }
+
+            setAxis(null);
           }}
 
-          initial={{
-            opacity: 0,
-
-            x:
-              direction === 1
-                ? 40
-                : direction === -1
-                  ? -40
-                  : 0,
-
-            y:
-              direction === 2
-                ? 60
-                : direction === -2
-                  ? -60
-                  : 0,
-          }}
-
-          animate={{
-            opacity: 1,
-            x: 0,
-            y: 0,
-          }}
-
-          exit={{
-            opacity: 0,
-
-            x:
-              direction === 1
-                ? -40
-                : direction === -1
-                  ? 40
-                  : 0,
-
-            y:
-              direction === 2
-                ? -60
-                : direction === -2
-                  ? 60
-                  : 0,
-          }}
-
-          transition={{
-            duration: 0.07,
-            ease: 'linear',
-          }}
+          className="
+            absolute
+            inset-0
+          "
         >
-          <TopicCard
-            type={slide.type}
-            category={topic.category}
-            title={slide.title}
-            content={slide.content}
-            reference={slide.reference}
-            onShare={shareTopic}
-          />
+          {/* ABOVE */}
+
+          {previousTopic && (
+            <div
+              className="
+                absolute
+                inset-x-0
+                -top-full
+                h-full
+              "
+            >
+              <TopicCard
+                type="question"
+                category={
+                  previousTopic.category
+                }
+                title="Question"
+                content={
+                  previousTopic.question
+                }
+              />
+            </div>
+          )}
+
+          {/* LEFT */}
+
+          {previousSlide && (
+            <div
+              className="
+                absolute
+                inset-y-0
+                -left-full
+                w-full
+              "
+            >
+              <TopicCard
+                type={
+                  previousSlide.type
+                }
+                category={
+                  currentTopic.category
+                }
+                title={
+                  previousSlide.title
+                }
+                content={
+                  previousSlide.content
+                }
+                reference={
+                  previousSlide.reference
+                }
+              />
+            </div>
+          )}
+
+          {/* CENTER */}
+
+          <div
+            className="
+              absolute
+              inset-0
+            "
+          >
+            <TopicCard
+              type={
+                currentSlide.type
+              }
+              category={
+                currentTopic.category
+              }
+              title={
+                currentSlide.title
+              }
+              content={
+                currentSlide.content
+              }
+              reference={
+                currentSlide.reference
+              }
+              onShare={
+                shareTopic
+              }
+            />
+          </div>
+
+          {/* RIGHT */}
+
+          {nextSlide && (
+            <div
+              className="
+                absolute
+                inset-y-0
+                left-full
+                w-full
+              "
+            >
+              <TopicCard
+                type={
+                  nextSlide.type
+                }
+                category={
+                  currentTopic.category
+                }
+                title={
+                  nextSlide.title
+                }
+                content={
+                  nextSlide.content
+                }
+                reference={
+                  nextSlide.reference
+                }
+              />
+            </div>
+          )}
+
+          {/* BELOW */}
+
+          {nextTopic && (
+            <div
+              className="
+                absolute
+                inset-x-0
+                top-full
+                h-full
+              "
+            >
+              <TopicCard
+                type="question"
+                category={
+                  nextTopic.category
+                }
+                title="Question"
+                content={
+                  nextTopic.question
+                }
+              />
+            </div>
+          )}
         </motion.div>
-
-      </AnimatePresence>
-
+      </div>
     </div>
   );
 }
