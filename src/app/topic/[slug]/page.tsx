@@ -28,12 +28,9 @@ export async function generateMetadata({
   }
 
   return {
-    title: topic.question,
+    title: `${topic.question} | CathoScroll`,
     description:
-      topic.explanation.slice(
-        0,
-        160
-      ),
+      topic.explanation.slice(0, 160),
   };
 }
 
@@ -42,17 +39,15 @@ export default async function TopicPage({
 }: TopicPageProps) {
   const { slug } = await params;
 
-  const topicIndex =
-    topics.findIndex(
-      t => t.slug === slug
-    );
+  const topicIndex = topics.findIndex(
+    t => t.slug === slug
+  );
 
   if (topicIndex === -1) {
     notFound();
   }
 
-  const topic =
-    topics[topicIndex];
+  const topic = topics[topicIndex];
 
   const previousTopic =
     topicIndex > 0
@@ -60,25 +55,22 @@ export default async function TopicPage({
       : null;
 
   const nextTopic =
-    topicIndex <
-    topics.length - 1
+    topicIndex < topics.length - 1
       ? topics[topicIndex + 1]
       : null;
 
-  const relatedTopics =
-    topics
-      .filter(
-        t =>
-          t.category ===
-            topic.category &&
-          t.slug !== topic.slug
-      )
-      .slice(0, 4);
+  const relatedTopics = topics
+    .filter(
+      t =>
+        t.category === topic.category &&
+        t.slug !== topic.slug
+    )
+    .slice(0, 4);
 
   return (
     <main className="container py-12">
 
-      {/* Top Feed CTA */}
+      {/* Top CTA */}
 
       <div className="mb-10">
         <Link href="/">
@@ -99,9 +91,21 @@ export default async function TopicPage({
           {topic.category}
         </Badge>
 
+        <div
+          className="
+            mt-6
+            text-sm
+            uppercase
+            tracking-wider
+            text-text-muted
+          "
+        >
+          Question
+        </div>
+
         <h1
           className="
-            mt-4
+            mt-2
             max-w-4xl
             text-5xl
             font-extrabold
@@ -130,7 +134,6 @@ export default async function TopicPage({
           className="
             mb-4
             text-sm
-            font-medium
             uppercase
             tracking-wider
             text-text-muted
@@ -160,9 +163,7 @@ export default async function TopicPage({
         </h2>
 
         <div className="prose max-w-none">
-          <p>
-            {topic.explanation}
-          </p>
+          <p>{topic.explanation}</p>
         </div>
 
       </section>
@@ -250,27 +251,12 @@ export default async function TopicPage({
                   key={related.slug}
                   href={`/topic/${related.slug}`}
                   className="
-                    rounded-xl
-                    border
-                    border-border
-                    p-6
-                    transition-colors
-                    hover:bg-bg-secondary
-                  "
-                >
-                  <Badge
-                    variant="secondary"
-                    size="sm"
-                  >
-                    {related.category}
+                         {related.category}
                   </Badge>
 
                   <h3 className="mt-3 text-lg font-semibold">
-                    {
-                      related.question
-                    }
+                    {related.question}
                   </h3>
-
                 </Link>
               )
             )}
@@ -295,7 +281,21 @@ export default async function TopicPage({
             flex
             flex-col
             gap-4
-            md<div />
+            md:flex-row
+            md:items-center
+            md:justify-between
+          "
+        >
+
+          <div>
+            {previousTopic ? (
+              {`/topic/${previousTopic.slug}`}
+                <Button variant="outline">
+                  ← Previous Topic
+                </Button>
+              </Link>
+            ) : (
+              <div />
             )}
           </div>
 
