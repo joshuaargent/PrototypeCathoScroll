@@ -275,7 +275,7 @@ export default async function TopicPage({
         </section>
       )}
 
-      {/* Navigation */}
+            {/* Navigation */}
 
       <section
         className="
@@ -284,10 +284,63 @@ export default async function TopicPage({
           pt-8
         "
       >
-
         <div
           className="
             flex
             flex-col
-           );
-}
+            gap-4
+            md:flex-row
+            md:items-center
+            md:justify-between
+          "
+        >
+          <div>
+            {previousTopic ? (
+              <Link
+                href={`/topic/${previousTopic.slug}`}
+                className="
+                  text-text-secondary
+                  hover:text-text-primary
+                  transition-colors
+                "
+              >
+                ← Previous Topic
+              </Link>
+            ) : (
+              <div />
+            )}
+          </div>
+
+          <Link
+            href="/"
+            className="
+              font-medium
+              text-accent
+              hover:text-accent-hover
+              transition-colors
+            "
+          >
+            Explore Feed
+          </Link>
+
+          <div>
+            {nextTopic ? (
+              <Link
+                href={`/topic/${nextTopic.slug}`}
+                className="
+                  text-text-secondary
+                  hover:text-text-primary
+                  transition-colors
+                "
+              >
+                Next Topic →
+              </Link>
+            ) : (
+              <div />
+            )}
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}   
