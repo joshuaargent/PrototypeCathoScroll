@@ -84,15 +84,9 @@ export function TopicCard({
     >
       {/* Header */}
 
-      <div
-  className="
-    flex
-    flex-1
-    items-center
-    justify-center
-    pb-12
-  "
->
+      {/* Header */}
+
+<div className="flex items-center justify-between">
 
         <Badge
           variant="accent"
