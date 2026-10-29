@@ -33,11 +33,6 @@ export const siteConfig: SiteConfig = {
 
 export const mainNav: NavItem[] = [
   { label: 'Home', href: '/' },
-  { label: 'Projects', href: '/projects' },
-  { label: 'About', href: '/about' },
-  { label: 'Blog', href: '/blog' },
-  { label: 'Resume', href: '/resume' },
-  { label: 'Contact', href: '/contact' },
 ];
 
 export const footerNav = {
