@@ -118,14 +118,14 @@ export function TopicViewer({
   const springHome = () => {
     animate(x, 0, {
       type: 'spring',
-      stiffness: 1200,
-      damping: 80,
+      stiffness: 1000,
+      damping: 70,
     });
 
     animate(y, 0, {
       type: 'spring',
-      stiffness: 1200,
-      damping: 80,
+      stiffness: 1000,
+      damping: 70,
     });
   };
 
@@ -143,7 +143,7 @@ export function TopicViewer({
         ? -width
         : width,
       {
-        duration: 0.16,
+        duration: 0.14,
         ease: 'easeOut',
       }
     );
@@ -154,16 +154,8 @@ export function TopicViewer({
         : prev - 1
     );
 
-    x.set(
-      direction === 'next'
-        ? width
-        : -width
-    );
-
-    animate(x, 0, {
-      type: 'spring',
-      stiffness: 1200,
-      damping: 80,
+    requestAnimationFrame(() => {
+      x.set(0);
     });
   };
 
@@ -181,7 +173,7 @@ export function TopicViewer({
         ? -height
         : height,
       {
-        duration: 0.16,
+        duration: 0.14,
         ease: 'easeOut',
       }
     );
@@ -194,16 +186,8 @@ export function TopicViewer({
       onPreviousTopic?.();
     }
 
-    y.set(
-      direction === 'next'
-        ? height
-        : -height
-    );
-
-    animate(y, 0, {
-      type: 'spring',
-      stiffness: 1200,
-      damping: 80,
+    requestAnimationFrame(() => {
+      y.set(0);
     });
   };
 
@@ -235,8 +219,8 @@ export function TopicViewer({
 
     if (!axis) {
       if (
-        Math.abs(deltaX) > 6 ||
-        Math.abs(deltaY) > 6
+        Math.abs(deltaX) > 4 ||
+        Math.abs(deltaY) > 4
       ) {
         setAxis(
           Math.abs(deltaX) >
@@ -284,7 +268,7 @@ export function TopicViewer({
 
       if (axis === 'x') {
         const threshold =
-          width * 0.15;
+          width * 0.12;
 
         if (
           dx < -threshold &&
@@ -307,7 +291,7 @@ export function TopicViewer({
 
       if (axis === 'y') {
         const threshold =
-          height * 0.12;
+          height * 0.1;
 
         if (
           dy < -threshold &&
@@ -377,6 +361,7 @@ export function TopicViewer({
             absolute
             inset-0
             select-none
+            will-change-transform
           "
         >
           {/* TOP */}
@@ -485,6 +470,7 @@ export function TopicViewer({
           )}
         </motion.div>
       </div>
+
     </div>
   );
 }
