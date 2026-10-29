@@ -84,6 +84,11 @@ export function TopicCard({
         <Badge
           variant="accent"
           size={type === 'question' ? 'lg' : 'md'}
+          className={
+  type === 'question'
+    ? 'bg-accent-light/20'
+    : ''
+}
         >
           {category}
         </Badge>
