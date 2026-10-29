@@ -102,7 +102,7 @@ export function TopicViewer({
   };
 
   // ----------------------------------
-  // Share Topic
+  // Share
   // ----------------------------------
 
   const shareTopic = async () => {
@@ -125,7 +125,7 @@ export function TopicViewer({
 
       await navigator.clipboard.writeText(url);
     } catch {
-      // User cancelled share
+      // Ignore cancel
     }
   };
 
@@ -186,16 +186,22 @@ export function TopicViewer({
 
           drag
 
-          dragMomentum
+          dragMomentum={false}
 
           dragElastic={0.15}
+
+          dragTransition={{
+            bounceStiffness: 600,
+            bounceDamping: 30,
+          }}
 
           style={{
             touchAction: 'none',
           }}
 
           whileDrag={{
-            scale: 0.985,
+            scale: 0.98,
+            rotateZ: 0.5,
           }}
 
           onDragEnd={(event, info) => {
@@ -259,16 +265,16 @@ export function TopicViewer({
 
             x:
               direction === 1
-                ? 50
+                ? 40
                 : direction === -1
-                  ? -50
+                  ? -40
                   : 0,
 
             y:
               direction === 2
-                ? 80
+                ? 60
                 : direction === -2
-                  ? -80
+                  ? -60
                   : 0,
           }}
 
@@ -283,21 +289,21 @@ export function TopicViewer({
 
             x:
               direction === 1
-                ? -50
+                ? -40
                 : direction === -1
-                  ? 50
+                  ? 40
                   : 0,
 
             y:
               direction === 2
-                ? -80
+                ? -60
                 : direction === -2
-                  ? 80
+                  ? 60
                   : 0,
           }}
 
           transition={{
-            duration: 0.08,
+            duration: 0.07,
             ease: 'linear',
           }}
         >
