@@ -77,6 +77,10 @@ export function TopicViewer({
   );
 
   useEffect(() => {
+  setSlideIndex(0);
+}, [topicIndex]);
+
+  useEffect(() => {
   x.set(0);
   y.set(0);
 }, [slideIndex, topicIndex, x, y]);
@@ -121,14 +125,14 @@ export function TopicViewer({
   const springHome = () => {
   animate(x, 0, {
     type: 'spring',
-    stiffness: 1400,
-    damping: 90,
+    stiffness: 1800,
+    damping: 120,
   });
 
   animate(y, 0, {
     type: 'spring',
-    stiffness: 1400,
-    damping: 90,
+    stiffness: 1800,
+    damping: 120,
   });
 };
 
@@ -195,17 +199,26 @@ export function TopicViewer({
 };
 
   const handlePointerDown = (
-    event: React.PointerEvent
-  ) => {
-    setIsDragging(true);
+  event: React.PointerEvent
+) => {
+  setIsDragging(true);
 
-    setAxis(null);
+  event.currentTarget.setPointerCapture(
+    event.pointerId
+  );
 
-    startRef.current = {
-      x: event.clientX,
-      y: event.clientY,
-    };
+  setAxis(null);
+
+  currentRef.current = {
+    x: 0,
+    y: 0,
   };
+
+  startRef.current = {
+    x: event.clientX,
+    y: event.clientY,
+  };
+};
 
   const handlePointerMove = (
     event: React.PointerEvent
@@ -237,20 +250,46 @@ export function TopicViewer({
     }
 
     if (axis === 'x') {
-      x.set(deltaX);
-      y.set(0);
+  if (
+    !previousSlide &&
+    deltaX > 0
+  ) {
+    x.set(deltaX * 0.25);
+  } else if (
+    !nextSlide &&
+    deltaX < 0
+  ) {
+    x.set(deltaX * 0.25);
+  } else {
+    x.set(deltaX);
+  }
 
-      currentRef.current.x =
-        deltaX;
-    }
+  y.set(0);
+
+  currentRef.current.x =
+    deltaX;
+}
 
     if (axis === 'y') {
-      y.set(deltaY);
-      x.set(0);
+  if (
+    !previousTopic &&
+    deltaY > 0
+  ) {
+    y.set(deltaY * 0.25);
+  } else if (
+    !nextTopic &&
+    deltaY < 0
+  ) {
+    y.set(deltaY * 0.25);
+  } else {
+    y.set(deltaY);
+  }
 
-      currentRef.current.y =
-        deltaY;
-    }
+  x.set(0);
+
+  currentRef.current.y =
+    deltaY;
+}
   };
 
   const handlePointerUp =
@@ -258,13 +297,19 @@ export function TopicViewer({
       setIsDragging(false);
 
       const dx =
-        currentRef.current.x;
+  currentRef.current.x;
 
-      const dy =
-        currentRef.current.y;
+const dy =
+  currentRef.current.y;
 
-      const absDx = Math.abs(dx);
-      const absDy = Math.abs(dy);
+const absDx = Math.abs(dx);
+const absDy = Math.abs(dy);
+
+const velocityX =
+  absDx / 16;
+
+const velocityY =
+  absDy / 16;
 
       const width =
         window.innerWidth;
@@ -277,7 +322,8 @@ export function TopicViewer({
     width * 0.08;
 
   const commit =
-    absDx > threshold;
+  absDx > threshold ||
+  velocityX > 25;
 
   if (
     commit &&
@@ -304,17 +350,23 @@ export function TopicViewer({
         const threshold =
           height * 0.08;
 
+        const commit =
+  absDy > threshold ||
+  velocityY > 25;
+
         if (
-          dy < -threshold &&
-          nextTopic
-        ) {
+  commit &&
+  dy < 0 &&
+  nextTopic
+) {
           await moveTopic(
             'next'
           );
         } else if (
-          dy > threshold &&
-          previousTopic
-        ) {
+  commit &&
+  dy > 0 &&
+  previousTopic
+) {
           await moveTopic(
             'previous'
           );
@@ -396,7 +448,15 @@ export function TopicViewer({
           {/* LEFT */}
 
           {previousSlide && (
-            <div className="absolute inset-y-0 left-[-100%] w-full">
+            <div
+  className="
+    absolute
+    inset-y-0
+    left-[-100%]
+    w-full
+    opacity-90
+  "
+>
               <TopicCard
                 type={
                   previousSlide.type
@@ -443,7 +503,15 @@ export function TopicViewer({
           {/* RIGHT */}
 
           {nextSlide && (
-            <div className="absolute inset-y-0 left-[100%] w-full">
+            <div
+  className="
+    absolute
+    inset-y-0
+    left-[100%]
+    w-full
+    opacity-90
+  "
+>
               <TopicCard
                 type={
                   nextSlide.type
