@@ -2,43 +2,17 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { topics } from '@/data/topics';
-
 import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
 
-interface TopicPageProps {
+interface Props {
   params: Promise<{
     slug: string;
   }>;
 }
 
-export async function generateMetadata({
-  params,
-}: TopicPageProps) {
-  const { slug } = await params;
-
-  const topic = topics.find(
-    (t) => t.slug === slug
-  );
-
-  if (!topic) {
-    return {
-      title: 'Topic Not Found',
-    };
-  }
-
-  return {
-    title: `${topic.question} | CathoScroll`,
-    description: topic.explanation.slice(
-      0,
-      160
-    ),
-  };
-}
-
 export default async function TopicPage({
   params,
-}: TopicPageProps) {
+}: Props) {
   const { slug } = await params;
 
   const topicIndex = topics.findIndex(
@@ -72,19 +46,25 @@ export default async function TopicPage({
   return (
     <main className="container py-12">
 
-      {/* Top CTA */}
+      {/* Back */}
 
-      <div className="mb-10">
-        <Link href="/">
-          <Button variant="outline">
-            ← Explore Feed
-          </Button>
-        </Link>
-      </div>
+      <Link
+        href="/"
+        className="
+          inline-flex
+          items-center
+          text-sm
+          text-text-secondary
+          hover:text-text-primary
+          transition-colors
+        "
+      >
+        ← Explore Feed
+      </Link>
 
       {/* Hero */}
 
-      <section className="mb-16">
+      <section className="mt-8 mb-16">
 
         <Badge
           variant="accent"
@@ -95,7 +75,7 @@ export default async function TopicPage({
 
         <div
           className="
-            mt-6
+            mt-4
             text-sm
             uppercase
             tracking-wider
@@ -107,8 +87,7 @@ export default async function TopicPage({
 
         <h1
           className="
-            mt-2
-            max-w-4xl
+            mt-4
             text-5xl
             font-extrabold
             leading-tight
@@ -118,40 +97,18 @@ export default async function TopicPage({
           {topic.question}
         </h1>
 
-        <div
+        <p
           className="
             mt-8
-            rounded-2xl
-            border
-            border-border
-            bg-bg-card
-            p-8
+            max-w-4xl
+            text-2xl
+            font-semibold
+            leading-relaxed
+            md:text-3xl
           "
         >
-          <div
-            className="
-              mb-3
-              text-sm
-              uppercase
-              tracking-wider
-              text-text-muted
-            "
-          >
-            Answer
-          </div>
-
-          <p
-            className="
-              max-w-none
-              text-2xl
-              font-semibold
-              leading-relaxed
-              md:text-3xl
-            "
-          >
-            {topic.answer}
-          </p>
-        </div>
+          {topic.answer}
+        </p>
 
       </section>
 
@@ -159,13 +116,19 @@ export default async function TopicPage({
 
       <section className="mb-16">
 
-        <h2 className="mb-6">
+        <h2 className="mb-6 text-3xl font-bold">
           Explanation
         </h2>
 
-        <div className="prose max-w-none">
-          <p>{topic.explanation}</p>
-        </div>
+        <p
+          className="
+            max-w-4xl
+            text-lg
+            leading-relaxed
+          "
+        >
+          {topic.explanation}
+        </p>
 
       </section>
 
@@ -173,7 +136,7 @@ export default async function TopicPage({
 
       <section
         className="
-          mb-12
+          mb-16
           rounded-2xl
           border
           border-border
@@ -181,19 +144,42 @@ export default async function TopicPage({
           p-8
         "
       >
-        <h2 className="mb-4">
+
+        <h2 className="mb-6 text-3xl font-bold">
           Catechism
         </h2>
 
         <p
           className="
-            max-w-none
             text-lg
             leading-relaxed
           "
         >
           {topic.catechism.text}
         </p>
+
+        <div className="mt-6 flex flex-wrap gap-2">
+
+          {topic.catechism.paragraphs.map(
+            (paragraph) => (
+              <span
+                key={paragraph}
+                className="
+                  rounded-full
+                  border
+                  border-border
+                  px-3
+                  py-1
+                  text-sm
+                "
+              >
+                CCC {paragraph}
+              </span>
+            )
+          )}
+
+        </div>
+
       </section>
 
       {/* Scripture */}
@@ -204,17 +190,17 @@ export default async function TopicPage({
           rounded-2xl
           border
           border-border
-          bg-bg-card
           p-8
         "
       >
-        <h2 className="mb-2">
+
+        <h2 className="mb-3 text-3xl font-bold">
           Scripture
         </h2>
 
         <p
           className="
-            mb-4
+            mb-6
             text-sm
             text-text-secondary
           "
@@ -226,118 +212,82 @@ export default async function TopicPage({
           className="
             border-l-4
             border-accent
-            pl-4
+            pl-6
             text-xl
             italic
           "
         >
           {topic.scripture.text}
         </blockquote>
+
       </section>
 
       {/* Related Topics */}
 
-{relatedTopics.length > 0 && (
-  <section className="mb-16">
-    <h2 className="mb-6">
-      Related Topics
-    </h2>
+      {relatedTopics.length > 0 && (
+        <section className="mb-16">
 
-    <div className="grid gap-4 md:grid-cols-2">
-      {relatedTopics.map((related) => (
-        <Link
-          key={related.slug}
-          href={`/topic/${related.slug}`}
-          className="
-            block
-            rounded-2xl
-            border
-            border-border
-            bg-bg-card
-            p-6
-            transition-colors
-            hover:bg-bg-secondary
-          "
-        >
-          <Badge
-            variant="accent"
-            size="sm"
-          >
-            {related.category}
-          </Badge>
+          <h2 className="mb-6 text-3xl font-bold">
+            Related Topics
+          </h2>
 
-          <h3
-            className="
-              mt-4
-              text-lg
-              font-semibold
-            "
-          >
-            {related.question}
-          </h3>
-        </Link>
-      ))}
-    </div>
-  </section>
-)}
+          <div className="grid gap-4 md:grid-cols-2">
+
+            {relatedTopics.map(
+              (related) => (
+                <Link
+                  key={related.slug}
+                  href={`/topic/${related.slug}`}
+                  className="
+                    block
+                    rounded-2xl
+                    border
+                    border-border
+                    p-6
+                    transition-colors
+                    hover:bg-bg-secondary
+                  "
+                >
+
+                  <Badge
+                    variant="accent"
+                    size="sm"
+                  >
+                    {related.category}
+                  </Badge>
+
+                  <h3
+                    className="
+                      mt-3
+                      text-lg
+                      font-semibold
+                    "
+                  >
+                    {related.question}
+                  </h3>
+
+                </Link>
+              )
+            )}
+
+          </div>
+
+        </section>
+      )}
 
       {/* Navigation */}
 
-<section
-  className="
-    border-t
-    border-border
-    pt-8
-  "
->
-  <div
-    className="
-      flex
-      flex-col
-      gap-4
-      md:flex-row
-      md:items-center
-      md:justify-between
-    "
-  >
-    <div>
-      {previousTopic ? (
-        <Link
-          href={`/topic/${previousTopic.slug}`}
-        >
-          <Button variant="outline">
-            ← Previous Topic
-          </Button>
-        </Link>
-      ) : (
-        <div />
-      )}
-    </div>
+      <section
+        className="
+          border-t
+          border-border
+          pt-8
+        "
+      >
 
-    <Link href="/">
-      <Button>
-        Explore Feed
-      </Button>
-    </Link>
-
-    <div>
-      {nextTopic ? (
-        <Link
-          href={`/topic/${nextTopic.slug}`}
-        >
-          <Button variant="outline">
-            Next Topic →
-          </Button>
-        </Link>
-      ) : (
-              <div />
-            )}
-          </div>
-
-        </div>
-
-      </section>
-
-    </main>
-  );
+        <div
+          className="
+            flex
+            flex-col
+           );
 }
