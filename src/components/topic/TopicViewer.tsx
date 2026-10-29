@@ -384,22 +384,22 @@ const velocityY =
     };
 
   return (
-    <div className="h-full">
+    <div className="h-screen flex flex-col">
 
-      <div className="px-6 pt-4">
-        <TopicProgress
-          current={slideIndex}
-          total={slides.length}
-        />
-      </div>
+      <div className="px-6 pt-4 pb-4">
+  <TopicProgress
+    current={slideIndex}
+    total={slides.length}
+  />
+</div>
 
       <div
-        className="
-          relative
-          h-[calc(100vh-5rem)]
-          overflow-hidden
-        "
-      >
+  className="
+    relative
+    flex-1
+    overflow-hidden
+  "
+>
         <motion.div
           style={{
             x,

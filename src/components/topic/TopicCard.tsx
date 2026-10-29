@@ -69,20 +69,30 @@ export function TopicCard({
     <div
       className={cn(
         `
-          h-[calc(100vh-9rem)]
-          w-full
-          px-8
-          py-8
-          flex
-          flex-col
-        `,
+  h-full
+  w-full
+  px-6
+  py-6
+  md:px-8
+  md:py-8
+  flex
+  flex-col
+`
         type === 'question' &&
-          'bg-accent-light/10'
+          'bg-accent-light/5'
       )}
     >
       {/* Header */}
 
-      <div className="flex items-center justify-between">
+      <div
+  className="
+    flex
+    flex-1
+    items-center
+    justify-center
+    pb-12
+  "
+>
 
         <Badge
           variant="accent"
@@ -109,10 +119,12 @@ export function TopicCard({
               onClick={onShare}
               aria-label="Share topic"
               className="
-                text-text-muted
-                hover:text-text-primary
-                transition-colors
-              "
+  text-text-muted
+  hover:text-text-primary
+  transition-colors
+  p-2
+  -m-2
+"
             >
               <Share2 className="h-5 w-5" />
             </button>
