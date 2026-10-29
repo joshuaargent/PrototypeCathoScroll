@@ -69,13 +69,14 @@ export function TopicFeed({
   }
 
   return (
+    return (
+  <div className="h-full">
     <TopicViewer
       topics={feedTopics}
       topicIndex={topicIndex}
       onNextTopic={nextTopic}
-      onPreviousTopic={
-        previousTopic
-      }
+      onPreviousTopic={previousTopic}
     />
-  );
+  </div>
+);
 }

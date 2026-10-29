@@ -104,6 +104,11 @@ html.dark {
    Base Styles
    ------------------------------------------ */
 
+html,
+body {
+  height: 100%;
+}
+
 html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
