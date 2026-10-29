@@ -267,7 +267,7 @@ export function TopicViewer({
   y.set(0);
 
   currentRef.current.x =
-    deltaX;
+  x.get();
 }
 
     if (axis === 'y') {
@@ -288,7 +288,7 @@ export function TopicViewer({
   x.set(0);
 
   currentRef.current.y =
-    deltaY;
+  y.get();
 }
   };
 
@@ -319,7 +319,7 @@ const velocityY =
 
       if (axis === 'x') {
   const threshold =
-    width * 0.08;
+    width * 0.07;
 
   const commit =
   absDx > threshold ||
@@ -348,7 +348,7 @@ const velocityY =
 
       if (axis === 'y') {
         const threshold =
-          height * 0.08;
+          height * 0.07;
 
         const commit =
   absDy > threshold ||
@@ -431,7 +431,15 @@ const velocityY =
           {/* TOP */}
 
           {previousTopic && (
-            <div className="absolute inset-x-0 top-[-100%] h-full">
+            <div
+  className="
+    absolute
+    inset-x-0
+    top-[-100%]
+    h-full
+    opacity-90
+  "
+>
               <TopicCard
                 type="question"
                 category={
@@ -535,7 +543,15 @@ const velocityY =
           {/* BOTTOM */}
 
           {nextTopic && (
-            <div className="absolute inset-x-0 top-[100%] h-full">
+            <div
+  className="
+    absolute
+    inset-x-0
+    top-[100%]
+    h-full
+    opacity-90
+  "
+>
               <TopicCard
                 type="question"
                 category={
