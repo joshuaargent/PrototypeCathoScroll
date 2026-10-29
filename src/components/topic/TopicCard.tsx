@@ -77,7 +77,7 @@ export function TopicCard({
   md:py-8
   flex
   flex-col
-`
+`,
         type === 'question' &&
           'bg-accent-light/5'
       )}
