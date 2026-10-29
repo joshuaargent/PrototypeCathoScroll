@@ -69,14 +69,18 @@ export function TopicCard({
   return (
     <Card
       padding="lg"
-      className="
-        h-[calc(100vh-9rem)]
-        flex
-        flex-col
-        overflow-hidden
-        rounded-3xl
-        shadow-lg
-      "
+      className={cn(
+        `
+          h-[calc(100vh-9rem)]
+          flex
+          flex-col
+          overflow-hidden
+          rounded-3xl
+          shadow-lg
+        `,
+        type === 'question' &&
+          'bg-accent-light/10'
+      )}
     >
       {/* Header */}
 
@@ -84,11 +88,6 @@ export function TopicCard({
         <Badge
           variant="accent"
           size={type === 'question' ? 'lg' : 'md'}
-          className={
-  type === 'question'
-    ? 'bg-accent-light/20'
-    : ''
-}
         >
           {category}
         </Badge>
