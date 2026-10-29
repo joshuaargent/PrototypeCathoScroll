@@ -237,88 +237,99 @@ export default async function TopicPage({
 
       {/* Related Topics */}
 
-      {relatedTopics.length > 0 && (
-        <section className="mb-16">
+{relatedTopics.length > 0 && (
+  <section className="mb-16">
+    <h2 className="mb-6">
+      Related Topics
+    </h2>
 
-          <h2 className="mb-6">
-            Related Topics
-          </h2>
+    <div className="grid gap-4 md:grid-cols-2">
+      {relatedTopics.map((related) => (
+        <Link
+          key={related.slug}
+          href={`/topic/${related.slug}`}
+          className="
+            block
+            rounded-2xl
+            border
+            border-border
+            bg-bg-card
+            p-6
+            transition-colors
+            hover:bg-bg-secondary
+          "
+        >
+          <Badge
+            variant="accent"
+            size="sm"
+          >
+            {related.category}
+          </Badge>
 
-          <div className="grid gap-4 md:grid-cols-2">
-
-            {relatedTopics.map(
-              (related) => (
-                <Link
-                  key={related.slug}
-                  href={`/topic/${related.slug}`}
-                  className="
-                    rounded-2xl
-                    border
-                    border-border
-                    bg-bg-card
-                    p-6
-                    transition-all
-                    hover:-translate-y-1
+          <h3
+            className="
+              mt-4
+              text-lg
+              font-semibold
             "
-                  >
-                    {related.question}
-                  </h3>
-                </Link>
-              )
-            )}
-
-          </div>
-
-        </section>
-      )}
+          >
+            {related.question}
+          </h3>
+        </Link>
+      ))}
+    </div>
+  </section>
+)}
 
       {/* Navigation */}
 
-      <section
-        className="
-          border-t
-          border-border
-          pt-8
-        "
-      >
-
-        <div
-          className="
-            flex
-            flex-col
-            gap-4
-            md:flex-row
-            md:items-center
-            md:justify-between
-          "
+<section
+  className="
+    border-t
+    border-border
+    pt-8
+  "
+>
+  <div
+    className="
+      flex
+      flex-col
+      gap-4
+      md:flex-row
+      md:items-center
+      md:justify-between
+    "
+  >
+    <div>
+      {previousTopic ? (
+        <Link
+          href={`/topic/${previousTopic.slug}`}
         >
+          <Button variant="outline">
+            ← Previous Topic
+          </Button>
+        </Link>
+      ) : (
+        <div />
+      )}
+    </div>
 
-          <div>
-            {previousTopic ? (
-              {`/topic/${previousTopic.slug}`}
-                <Button variant="outline">
-                  ← Previous Topic
-                </Button>
-              </Link>
-            ) : (
-              <div />
-            )}
-          </div>
+    <Link href="/">
+      <Button>
+        Explore Feed
+      </Button>
+    </Link>
 
-          /
-            <Button>
-              Explore Feed
-            </Button>
-          </Link>
-
-          <div>
-            {nextTopic ? (
-              {`/topic/${nextTopic.slug}`}
-                <Button variant="outline">
-                  Next Topic →
-                </Button>
-              </Link>
-            ) : (
+    <div>
+      {nextTopic ? (
+        <Link
+          href={`/topic/${nextTopic.slug}`}
+        >
+          <Button variant="outline">
+            Next Topic →
+          </Button>
+        </Link>
+      ) : (
               <div />
             )}
           </div>
