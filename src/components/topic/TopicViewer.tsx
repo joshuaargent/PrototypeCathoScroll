@@ -384,7 +384,7 @@ const velocityY =
     };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-screen flex flex-col">
 
       <div className="px-6 pt-4 pb-4">
   <TopicProgress
