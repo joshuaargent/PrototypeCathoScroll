@@ -398,6 +398,7 @@ const velocityY =
     relative
     flex-1
     overflow-hidden
+    pt-1
   "
 >
         <motion.div
