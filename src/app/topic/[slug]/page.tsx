@@ -1,21 +1,28 @@
 import { notFound } from 'next/navigation';
 
 import { TopicViewer } from '@/components/topic/TopicViewer';
-
 import { topics } from '@/data/topics';
 
-interface Props {
-  params: {
+interface TopicPageProps {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
-export default function TopicPage({ params }: Props) {
-  const topic = topics.find((t) => t.slug === params.slug);
+export default async function TopicPage({
+  params,
+}: TopicPageProps) {
+  const { slug } = await params;
+
+  const topic = topics.find(
+    topic => topic.slug === slug
+  );
 
   if (!topic) {
     notFound();
   }
 
-  return <TopicViewer topic={topic} />;
+  return (
+    <TopicViewer topic={topic} />
+  );
 }
