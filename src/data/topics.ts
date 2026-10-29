@@ -324,5 +324,129 @@ export const topics: Topic[] = [
     text: 'In hope of eternal life which God, who never lies, promised ages ago.'
   },
 },
+{
+  id: '11',
 
+  slug: 'how-do-you-know-what-god-has-revealed',
+
+  category: 'The Church',
+
+  question: 'How are you to know what God has revealed?',
+
+  answer:
+    'I am to know what God has revealed by the testimony, teaching, and authority of the Catholic Church.',
+
+  explanation:
+    'God did not leave humanity to discover revealed truth on its own. Jesus established a visible Church and entrusted it with the responsibility of preserving and proclaiming His teachings. Before the New Testament was written, the apostles preached the Gospel and handed on what they had received from Christ. The Catholic Church continues this apostolic mission through Scripture, Sacred Tradition, and the teaching authority known as the Magisterium. Catholics therefore do not rely solely on private interpretation when seeking to understand divine revelation. Instead, they trust the Church that Christ founded and guided by the Holy Spirit. The Church faithfully safeguards the truths necessary for salvation and helps believers understand Gods revelation correctly. Through the Churches teaching, Christians can confidently know the faith that has been handed down from the apostles throughout the centuries.',
+
+  catechism: {
+    paragraphs: ['80', '85', '87'],
+    text: 'Sacred Tradition and Sacred Scripture make up a single sacred deposit of the Word of God, entrusted to the Church. The task of giving an authentic interpretation of the Word of God has been entrusted to the living teaching office of the Church alone, whose authority is exercised in the name of Jesus Christ.'
+  },
+
+  scripture: {
+    reference: '1 Timothy 3:15',
+    text: 'The church of the living God is the pillar and bulwark of the truth.'
+  },
+},
+{
+  id: '12',
+
+  slug: 'who-gave-the-church-authority-to-teach',
+
+  category: 'The Church',
+
+  question: 'Who gave the Catholic Church divine authority to teach?',
+
+  answer:
+    'Jesus Christ gave the Catholic Church divine authority to teach when he said, "Go therefore, make disciples of all the nations".',
+
+  explanation:
+    'The authority of the Catholic Church does not come from human wisdom, political power, or popular opinion. It comes from Jesus Christ Himself. Before ascending into Heaven, Christ commissioned the apostles to teach all nations, baptise believers, and hand on everything He had commanded. This mission did not end with the death of the apostles but continues through their successors, the bishops, united with the Pope. The Churchs teaching authority exists to preserve and faithfully explain the revelation entrusted to it by Christ. Catholics believe that when the Church officially teaches on matters of faith and morals, the Holy Spirit assists her so that the Gospel may be transmitted accurately from generation to generation. This divine mission gives Christians confidence that the Church remains a trustworthy guide in matters concerning salvation and the Christian life.',
+
+  catechism: {
+    paragraphs: ['888', '889', '2034'],
+    text: 'Bishops, with priests as co-workers, have as their first task to preach the Gospel of God to all men. The Church, the pillar and bulwark of the truth, has received this solemn command of Christ from the apostles to announce the saving truth.'
+  },
+
+  scripture: {
+  reference: 'Matthew 28:19-20',
+  text: 'Go therefore and make disciples of all nations, baptising them in the name of the Father and of the Son and of the Holy Spirit, teaching them to observe all that I have commanded you; and behold, I am with you always, to the close of the age.'
+  },
+},
+{
+  id: '13',
+
+  slug: 'what-are-the-chief-things-god-has-revealed',
+
+  category: 'The Church',
+
+  question: 'What are the chief things which God has revealed?',
+
+  answer:
+    'The chief things which God has revealed are contained in the Apostles\' Creed.',
+
+  explanation:
+    'The Apostles\' Creed is one of the oldest and most important summaries of the Christian faith. It contains the essential truths that God has revealed about Himself, creation, salvation, the Church, and eternal life. From the earliest centuries, Christians used the Creed to profess their faith, especially before Baptism. Although the Creed does not contain every Church teaching, it provides a concise summary of the core beliefs that all Catholics are called to accept. The Creed helps unite believers in a common profession of faith and serves as a foundation for further catechesis. By learning and praying the Creed, Catholics deepen their understanding of the truths revealed by God and handed down by the Church throughout the ages.',
+
+  catechism: {
+    paragraphs: ['186', '187', '197'],
+    text: 'From the beginning, the apostolic Church expressed and handed on her faith in brief formulae. Such syntheses are called professions of faith since they summarise the faith professed by Christians. The Apostles\' Creed is the ancient baptismal symbol of the Church of Rome.'
+  },
+
+  scripture: {
+    reference: '2 Timothy 1:13-14',
+    text: 'Follow the pattern of the sound words which you have heard from me, in the faith and love which are in Christ Jesus; guard the truth that has been entrusted to you by the Holy Spirit who dwells within us.'
+  },
+},
+{
+  id: '14',
+
+  slug: 'say-the-apostles-creed',
+
+  category: 'The Church',
+
+  question: 'Say the Apostles\' Creed.',
+
+  answer:
+  'I believe in God, the Father almighty, Creator of heaven and earth; and in Jesus Christ, his only Son, our Lord; who was conceived by the Holy Spirit, born of the Virgin Mary, suffered under Pontius Pilate, was crucified, died and was buried. He descended into hell; the third day he rose again from the dead; he ascended into heaven; and sits at the right hand of God the Father almighty; from thence he shall come to judge the living and the dead. I believe in the Holy Spirit; the holy Catholic Church; the communion of saints; the forgiveness of sins; the resurrection of the body; and life everlasting. Amen.',
+
+  explanation:
+    'The Apostles\' Creed is one of the most important prayers and professions of faith in the Catholic Church. For nearly two thousand years, Christians have recited it to publicly proclaim what they believe about God, Jesus Christ, the Holy Spirit, the Church, and eternal life. The Creed provides a concise summary of the central truths of Christianity and serves as a foundation for Catholic teaching. It is recited during the Rosary and frequently used in the Church\'s liturgy. Learning the Creed helps Catholics understand not only what they believe but also why they believe it. Each statement within the Creed expresses an important truth revealed by God and handed down through the apostles. By praying the Creed thoughtfully, believers renew their commitment to the faith and unite themselves with Christians throughout the world and across history.',
+
+  catechism: {
+    paragraphs: ['185', '197', '199'],
+    text: 'Whoever says "I believe" says "I pledge myself to what we believe." Communion in faith needs a common language of faith, normative for all and uniting all in the same confession of faith. The Apostles\' Creed is rightly considered to be a faithful summary of the apostles\' faith.'
+  },
+
+  scripture: {
+    reference: 'Romans 10:9',
+    text: 'Because, if you confess with your lips that Jesus is Lord and believe in your heart that God raised him from the dead, you will be saved.'
+  },
+},
+{
+  id: '15',
+
+  slug: 'how-is-the-apostles-creed-divided',
+
+  category: 'The Church',
+
+  question: 'How is the Apostles\' Creed divided?',
+
+  answer:
+    'The Apostles\' Creed is divided into twelve parts or articles.',
+
+  explanation:
+    'The Apostles\' Creed is traditionally divided into twelve articles, each expressing an essential truth of the Christian faith. The articles begin with belief in God the Father as Creator, continue through the life, death, resurrection, and glorification of Jesus Christ, and conclude with the Holy Spirit, the Church, forgiveness of sins, resurrection of the body, and life everlasting. This structure helps Catholics understand the Creed as more than a prayer to be memorised. It is a summary of salvation history and a guide to the truths revealed by God. The division into articles also makes the Creed easier to study systematically, which is why many catechisms explain the faith article by article. By understanding each article, Catholics gain a deeper appreciation of the unity and beauty of the Christian faith.',
+
+  catechism: {
+    paragraphs: ['190', '191'],
+    text: 'The Creed is divided into three parts: the first speaks of the first divine Person and the wonderful work of creation; the next speaks of the second divine Person and the mystery of man\'s redemption; the third speaks of the Holy Spirit, the origin and source of our sanctification. These are further divided into twelve articles.'
+  },
+
+  scripture: {
+    reference: 'Ephesians 4:5-6',
+    text: 'One Lord, one faith, one baptism, one God and Father of us all, who is above all and through all and in all.'
+  },
+},
 ]
