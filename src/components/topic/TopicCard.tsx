@@ -45,8 +45,8 @@ export function TopicCard({
 
       case 'answer':
         return contentLength > 180
-          ? 'text-xl md:text-2xl font-semibold'
-          : 'text-2xl md:text-4xl font-semibold';
+          ? 'text-lg md:text-xl font-semibold'
+          : 'text-xl md:text-3xl font-semibold';
 
       case 'explanation':
         return contentLength > 300
@@ -54,9 +54,7 @@ export function TopicCard({
           : 'text-lg md:text-xl font-medium';
 
       case 'catechism':
-        return contentLength > 300
-          ? 'text-sm md:text-base'
-          : 'text-base md:text-lg';
+        return 'text-sm md:text-base';
 
       case 'scripture':
         return contentLength > 220
@@ -75,9 +73,9 @@ export function TopicCard({
         h-[calc(100vh-9rem)]
         flex
         flex-col
+        overflow-hidden
         rounded-3xl
         shadow-lg
-        overflow-hidden
       "
     >
       {/* Header */}
@@ -126,7 +124,7 @@ export function TopicCard({
             'mx-auto text-center',
             type === 'question'
               ? 'max-w-2xl'
-              : 'max-w-4xl'
+              : 'max-w-3xl'
           )}
         >
           <div
