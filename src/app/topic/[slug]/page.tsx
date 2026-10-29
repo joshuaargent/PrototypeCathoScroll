@@ -18,7 +18,7 @@ export async function generateMetadata({
   const { slug } = await params;
 
   const topic = topics.find(
-    t => t.slug === slug
+    (t) => t.slug === slug
   );
 
   if (!topic) {
@@ -29,8 +29,10 @@ export async function generateMetadata({
 
   return {
     title: `${topic.question} | CathoScroll`,
-    description:
-      topic.explanation.slice(0, 160),
+    description: topic.explanation.slice(
+      0,
+      160
+    ),
   };
 }
 
@@ -40,7 +42,7 @@ export default async function TopicPage({
   const { slug } = await params;
 
   const topicIndex = topics.findIndex(
-    t => t.slug === slug
+    (t) => t.slug === slug
   );
 
   if (topicIndex === -1) {
@@ -61,7 +63,7 @@ export default async function TopicPage({
 
   const relatedTopics = topics
     .filter(
-      t =>
+      (t) =>
         t.category === topic.category &&
         t.slug !== topic.slug
     )
@@ -75,7 +77,7 @@ export default async function TopicPage({
       <div className="mb-10">
         <Link href="/">
           <Button variant="outline">
-            ← Return to Feed
+            ← Explore Feed
           </Button>
         </Link>
       </div>
@@ -100,7 +102,7 @@ export default async function TopicPage({
             text-text-muted
           "
         >
-          Question
+          Topic {topicIndex + 1} of {topics.length}
         </div>
 
         <h1
@@ -116,47 +118,46 @@ export default async function TopicPage({
           {topic.question}
         </h1>
 
-      </section>
-
-      {/* Answer */}
-
-      <section
-        className="
-          mb-12
-          rounded-2xl
-          border
-          border-border
-          bg-bg-card
-          p-8
-        "
-      >
         <div
           className="
-            mb-4
-            text-sm
-            uppercase
-            tracking-wider
-            text-text-muted
+            mt-8
+            rounded-2xl
+            border
+            border-border
+            bg-bg-card
+            p-8
           "
         >
-          Answer
+          <div
+            className="
+              mb-3
+              text-sm
+              uppercase
+              tracking-wider
+              text-text-muted
+            "
+          >
+            Answer
+          </div>
+
+          <p
+            className="
+              max-w-none
+              text-2xl
+              font-semibold
+              leading-relaxed
+              md:text-3xl
+            "
+          >
+            {topic.answer}
+          </p>
         </div>
 
-        <p
-          className="
-            max-w-none
-            text-3xl
-            font-semibold
-            leading-relaxed
-          "
-        >
-          {topic.answer}
-        </p>
       </section>
 
       {/* Explanation */}
 
-      <section className="mb-12">
+      <section className="mb-16">
 
         <h2 className="mb-6">
           Explanation
@@ -191,7 +192,7 @@ export default async function TopicPage({
             leading-relaxed
           "
         >
-          {topic.catechism}
+          {topic.catechism.text}
         </p>
       </section>
 
@@ -199,7 +200,7 @@ export default async function TopicPage({
 
       <section
         className="
-          mb-12
+          mb-16
           rounded-2xl
           border
           border-border
@@ -218,7 +219,7 @@ export default async function TopicPage({
             text-text-secondary
           "
         >
-          {topic.scriptureReference}
+          {topic.scripture.reference}
         </p>
 
         <blockquote
@@ -230,7 +231,7 @@ export default async function TopicPage({
             italic
           "
         >
-          {topic.scripture}
+          {topic.scripture.text}
         </blockquote>
       </section>
 
@@ -246,15 +247,20 @@ export default async function TopicPage({
           <div className="grid gap-4 md:grid-cols-2">
 
             {relatedTopics.map(
-              related => (
+              (related) => (
                 <Link
                   key={related.slug}
                   href={`/topic/${related.slug}`}
                   className="
-                         {related.category}
-                  </Badge>
-
-                  <h3 className="mt-3 text-lg font-semibold">
+                    rounded-2xl
+                    border
+                    border-border
+                    bg-bg-card
+                    p-6
+                    transition-all
+                    hover:-translate-y-1
+            "
+                  >
                     {related.question}
                   </h3>
                 </Link>
@@ -301,7 +307,7 @@ export default async function TopicPage({
 
           /
             <Button>
-              Return to Feed
+              Explore Feed
             </Button>
           </Link>
 
