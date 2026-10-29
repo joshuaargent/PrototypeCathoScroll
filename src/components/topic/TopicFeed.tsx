@@ -69,7 +69,6 @@ export function TopicFeed({
   }
 
   return (
-    return (
   <div className="h-full">
     <TopicViewer
       topics={feedTopics}
