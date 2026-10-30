@@ -20,7 +20,7 @@ export default function CategoriesPage() {
 
   return (
     <main className="container py-12">
-      <div className="mb-12">
+      <div className="mt-8 mb-16">
 
         <h1
           className="
