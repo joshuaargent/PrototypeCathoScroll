@@ -245,7 +245,7 @@ useEffect(() => {
       ? -width
       : width,
     {
-      duration: 0.1,
+      duration: 0.2,
       ease: 'easeOut',
     }
   );
@@ -284,7 +284,7 @@ useEffect(() => {
       ? -height
       : height,
     {
-      duration: 0.1,
+      duration: 0.2,
       ease: 'easeOut',
     }
   );
@@ -356,41 +356,19 @@ useEffect(() => {
     }
 
     if (axis === 'x') {
-  if (
-    deltaX > 0
-  ) {
-    x.set(deltaX * 0.25);
-  } else if (
-    deltaX < 0
-  ) {
-    x.set(deltaX * 0.25);
-  } else {
-    x.set(deltaX);
-  }
+  x.set(deltaX);
 
   y.set(0);
 
-  currentRef.current.x =
-  x.get();
+  currentRef.current.x = deltaX;
 }
 
     if (axis === 'y') {
-  if (
-    deltaY > 0
-  ) {
-    y.set(deltaY * 0.25);
-  } else if (
-    deltaY < 0
-  ) {
-    y.set(deltaY * 0.25);
-  } else {
-    y.set(deltaY);
-  }
+  y.set(deltaY);
 
   x.set(0);
 
-  currentRef.current.y =
-  y.get();
+  currentRef.current.y = deltaY;
 }
   };
 
