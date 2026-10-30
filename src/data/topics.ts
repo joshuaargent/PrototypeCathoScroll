@@ -449,4 +449,154 @@ export const topics: Topic[] = [
     text: 'One Lord, one faith, one baptism, one God and Father of us all, who is above all and through all and in all.'
   },
 },
+{
+  id: '16',
+
+  slug: 'what-is-the-first-article-of-the-creed',
+
+  category: 'God',
+
+  question: 'What is the first article of the Creed?',
+
+  answer:
+    'The first article of the Creed is, "I believe in God, the Father almighty, Creator of heaven and earth".',
+
+  explanation:
+    'The first article of the Apostles\' Creed forms the foundation of the entire Christian faith. Before speaking about Jesus Christ, the Church first professes belief in God the Father, who created everything that exists. By calling God "Father", Christians express the personal relationship that God desires with humanity. By calling Him "almighty", they acknowledge His unlimited power and authority over all creation. By professing Him as "Creator of heaven and earth", believers recognise that everything visible and invisible owes its existence to God. This article reminds us that the universe is not the result of chance but of God\'s wisdom and love. It also teaches that every human person depends upon God and finds their ultimate purpose in Him. All the other articles of the Creed build upon this fundamental truth about God and His relationship with creation.',
+
+  catechism: {
+    paragraphs: ['198', '199', '279'],
+    text: 'Our profession of faith begins with God, for God is the First and the Last, the beginning and the end of everything. The Creed begins with God the Father, because the Father is the first divine Person of the Most Holy Trinity. We believe that God created the world according to his wisdom and love.'
+  },
+
+  scripture: {
+    reference: 'Genesis 1:1',
+    text: 'In the beginning God created the heavens and the earth.'
+  },
+},
+{
+  id: '17',
+
+  slug: 'what-is-god',
+
+  category: 'God',
+
+  question: 'What is God?',
+
+  answer:
+    'God is the supreme spirit, who alone exists of himself, and is infinite in all perfection.',
+
+  explanation:
+    'God is not merely the greatest being within the universe. He is the Creator of all things and the source of all existence. Unlike every created thing, God depends on nothing and no one for His existence. He has always existed and always will exist. As a pure spirit, God does not have a physical body and is not limited by space or time. God possesses every perfection infinitely. His wisdom is perfect, His power is limitless, His justice is flawless, His mercy is boundless, and His love is beyond measure. Because God is infinite, human minds can never fully comprehend Him, yet He has revealed enough of Himself for us to know, love, and serve Him. Every good thing found in creation reflects something of Gods perfect goodness and points us back to Him as its source.',
+
+  catechism: {
+    paragraphs: ['202', '212', '213'],
+    text: 'God revealed himself to his people Israel by making his name known to them. The divine name "I AM" expresses Gods faithfulness and eternity. God is fullness of Being and of every perfection, without origin and without end.'
+  },
+
+  scripture: {
+    reference: 'John 4:24',
+    text: 'God is spirit, and those who worship him must worship in spirit and truth.'
+  },
+},
+{
+  id: '18',
+
+  slug: 'why-is-god-called-almighty',
+
+  category: 'God',
+
+  question: 'Why is God called almighty?',
+
+  answer:
+    'God is called almighty because he can do all things; "For God everything is possible".',
+
+  explanation:
+    'Gods almighty power means that nothing can prevent Him from accomplishing His holy will. He created the universe from nothing, sustains all creation in existence, and governs the world with wisdom and love. Gods power is not arbitrary or destructive. Rather, it is always exercised in harmony with His perfect goodness, wisdom, and justice. When Catholics profess that God is almighty, they are expressing complete confidence in His ability to fulfil His promises and accomplish His plan of salvation. Gods power is especially revealed in the Resurrection of Jesus Christ, through which He conquered sin and death. At the same time, Gods omnipotence does not mean that He acts contrary to His own nature. God cannot lie, sin, or cease to be God because such actions would contradict His perfect being. His almighty power is therefore the power of perfect truth, love, and goodness.',
+
+  catechism: {
+    paragraphs: ['268', '269', '276'],
+    text: 'Of all the divine attributes, only Gods omnipotence is named in the Creed. God has universal power. He is almighty because he created everything, rules everything, and can do everything. Nothing is impossible with God.'
+  },
+
+  scripture: {
+    reference: 'Matthew 19:26',
+    text: 'But Jesus looked at them and said, "With men this is impossible, but with God all things are possible."'
+  },
+},
+{
+  id: '19',
+
+  slug: 'why-is-god-called-creator-of-heaven-and-earth',
+
+  category: 'God',
+
+  question: 'Why is God called Creator of heaven and earth?',
+
+  answer:
+    'God is called "Creator of heaven and earth" because he made heaven and earth, and all things, out of nothing, by his word.',
+
+  explanation:
+    'Everything that exists owes its existence to God. Before creation, nothing existed except God Himself. By His infinite power and wisdom, God freely created the entire universe. He did not need pre-existing materials or assistance from anyone. The Church teaches that God created all things "out of nothing", a doctrine known as creation ex nihilo. This includes everything visible, such as the earth and the stars, as well as everything invisible, such as angels. Creation is not the result of chance, necessity, or blind forces, but of Gods loving will. Because God is the Creator, all creation reflects His wisdom and goodness and ultimately belongs to Him. Recognising God as Creator should inspire gratitude, wonder, humility, and responsible stewardship of the world He has entrusted to us.',
+
+  catechism: {
+    paragraphs: ['290', '295', '296'],
+    text: 'In the beginning God created the heavens and the earth. We believe that God created the world according to his wisdom and love. God needs no pre-existent thing or any help in order to create, nor is creation any sort of necessary emanation from the divine substance. God creates freely out of nothing.'
+  },
+
+  scripture: {
+    reference: 'Genesis 1:1',
+    text: 'In the beginning God created the heavens and the earth.'
+  },
+},
+{
+  id: '20',
+
+  slug: 'had-god-any-beginning',
+
+  category: 'God',
+
+  question: 'Had God any beginning?',
+
+  answer:
+    'God had no beginning: he always was, he is, and always will be.',
+
+  explanation:
+    'Everything in the created world has a beginning. People are born, stars form, and even the universe itself had a beginning. God alone is different. He was not created and does not depend on anything else for His existence. God exists eternally, outside the limits of time. He does not grow older, change, or cease to exist. When God revealed Himself to Moses as "I AM", He revealed that He is the eternal and self-existent One. This truth gives Christians confidence because Gods promises do not change. Human beings come and go, but God remains forever the same. His love, faithfulness, truth, and power endure throughout all ages. The eternal nature of God reminds us that our lives are part of a much greater story and that our ultimate hope rests in the One who exists forever.',
+
+  catechism: {
+    paragraphs: ['212', '213', '220'],
+    text: 'God is fullness of Being and of every perfection, without origin and without end. In revealing his mysterious name, "I AM WHO I AM", God says who he is and by what name he is to be called forever. God alone IS.'
+  },
+
+  scripture: {
+    reference: 'Psalm 90:2',
+    text: 'Before the mountains were brought forth, or ever you had formed the earth and the world, from everlasting to everlasting you are God.'
+  },
+},
+{
+  id: '21',
+
+  slug: 'where-is-god',
+
+  category: 'God',
+
+  question: 'Where is God?',
+
+  answer:
+    'God is everywhere.',
+
+  explanation:
+    'God is present everywhere because He is not limited by space as created things are. Nothing can exist apart from His sustaining power. God is present in every place, sees all things, and knows all things. This does not mean that God is identical with the universe or that everything is God. Rather, God remains distinct from His creation while being fully present to it. His presence extends to every person and every circumstance, even when He may seem distant. This truth is a source of comfort because Christians know that they are never abandoned by God. Whether in moments of joy, suffering, prayer, or uncertainty, God is near. Because God is everywhere, every place can become a place of encounter with Him, and no situation is beyond His knowledge, care, and providence.',
+
+  catechism: {
+    paragraphs: ['300', '301', '303'],
+    text: 'God is infinitely greater than all his works, yet because he is the free and sovereign Creator, he is present to his creatures inmost being. In him we live and move and have our being. God cares for all, from the least things to the great events of the world and its history.'
+  },
+
+  scripture: {
+    reference: 'Psalm 139:7-10',
+    text: 'Where shall I go from your Spirit? Or where shall I flee from your presence? If I ascend to heaven, you are there! If I make my bed in Sheol, you are there!'
+  },
+},
 ]
