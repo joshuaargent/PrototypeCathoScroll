@@ -165,7 +165,9 @@ export function TopicViewer({
     setIsAnimating(true);
 
     try {
-      const width = window.innerWidth;
+      const width =
+  containerRef.current?.clientWidth ??
+window.innerWidth;    
 
       await animate(x, direction === 'next' ? -width : width, {
         duration: 0.2,
@@ -352,7 +354,7 @@ export function TopicViewer({
           {/* LEFT */}
 
           {previousSlide && (
-            <div className="absolute inset-y-0 left-[-100%] w-full opacity-90">
+            <div className="absolute top-0 left-[-100%] h-full  w-full opacity-90">
               <TopicCard
                 type={previousSlide.type}
                 category={currentTopic.category}
@@ -379,7 +381,7 @@ export function TopicViewer({
           {/* RIGHT */}
 
           {nextSlide && (
-            <div className="absolute inset-y-0 left-[100%] w-full opacity-90">
+            <div className="absolute top-0 left-[100%] h-full w-full opacity-90">
               <TopicCard
                 type={nextSlide.type}
                 category={currentTopic.category}
