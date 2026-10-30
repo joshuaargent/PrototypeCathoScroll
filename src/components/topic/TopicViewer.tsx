@@ -80,11 +80,6 @@ export function TopicViewer({
   setSlideIndex(0);
 }, [topicIndex]);
 
-  useEffect(() => {
-  x.set(0);
-  y.set(0);
-}, [slideIndex, topicIndex, x, y]);
-
   const [isAnimating, setIsAnimating] =
   useState(false);
 
@@ -252,8 +247,6 @@ useEffect(() => {
     }
   );
 
-  x.set(0);
-
   flushSync(() => {
     setSlideIndex(prev =>
       direction === 'next'
@@ -261,6 +254,9 @@ useEffect(() => {
         : prev - 1
     );
   });
+
+  x.jump(0);
+
 } finally {
   setIsAnimating(false);
 }
@@ -290,8 +286,6 @@ useEffect(() => {
     }
   );
 
-  y.set(0);
-
   flushSync(() => {
     setSlideIndex(0);
 
@@ -301,6 +295,9 @@ useEffect(() => {
       onPreviousTopic?.();
     }
   }); 
+
+  y.jump(0);
+
 } finally {
   setIsAnimating(false);
 }
