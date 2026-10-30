@@ -62,14 +62,17 @@ export function TopicViewer({
     topics[topicIndex];
 
   const previousTopic =
-    topicIndex > 0
-      ? topics[topicIndex - 1]
-      : null;
+  topics[
+    (topicIndex - 1 + topics.length) %
+      topics.length
+  ];
+
 
   const nextTopic =
-    topicIndex < topics.length - 1
-      ? topics[topicIndex + 1]
-      : null;
+  topics[
+    (topicIndex + 1) %
+      topics.length
+  ];
 
   const slides = useMemo(
     () => getTopicSlides(currentTopic),
@@ -356,12 +359,10 @@ useEffect(() => {
 
     if (axis === 'x') {
   if (
-    !previousSlide &&
     deltaX > 0
   ) {
     x.set(deltaX * 0.25);
   } else if (
-    !nextSlide &&
     deltaX < 0
   ) {
     x.set(deltaX * 0.25);
@@ -377,12 +378,10 @@ useEffect(() => {
 
     if (axis === 'y') {
   if (
-    !previousTopic &&
     deltaY > 0
   ) {
     y.set(deltaY * 0.25);
   } else if (
-    !nextTopic &&
     deltaY < 0
   ) {
     y.set(deltaY * 0.25);
