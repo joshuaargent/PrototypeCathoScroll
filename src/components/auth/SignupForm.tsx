@@ -31,7 +31,7 @@ export function SignupForm() {
 
     const username = (formData.get('username') as string).trim().toLowerCase();
 
-    const email = formData.get('email') as string;
+    const email = (formData.get('email') as string).trim().toLowerCase();
 
     const password = formData.get('password') as string;
 
@@ -80,28 +80,34 @@ export function SignupForm() {
       });
 
       if (error) {
-        setError(error.message);
+        setError('Unable to create account.');
 
         return;
       }
 
-      if (data.user) {
-        const { error: profileError } = await supabase.from('profiles').insert({
-          id: data.user.id,
+      if (!data.user) {
+        setError('Unable to create account.');
 
-          username,
-
-          display_name: username,
-
-          subscription_tier: 'free',
-        });
-
-        if (profileError) {
-          setError(profileError.message);
-
-          return;
-        }
+        return;
       }
+
+      const { error: profileError } = await supabase.from('profiles').insert({
+        id: data.user.id,
+
+        username,
+
+        display_name: username,
+
+        subscription_tier: 'free',
+      });
+
+      if (profileError) {
+        setError('Account created, but profile setup failed. Please contact support.');
+
+        return;
+      }
+
+      router.refresh();
 
       router.push('/account');
     } catch {
@@ -124,6 +130,7 @@ export function SignupForm() {
         type="text"
         placeholder="username"
         hint="3-20 characters. Use letters, numbers and underscores only."
+        disabled={loading}
         required
       />
 
@@ -133,6 +140,7 @@ export function SignupForm() {
         type="email"
         placeholder="you@example.com"
         autoComplete="email"
+        disabled={loading}
         required
       />
 
@@ -144,6 +152,7 @@ export function SignupForm() {
           placeholder="Create a password"
           autoComplete="new-password"
           hint="Minimum 8 characters."
+          disabled={loading}
           required
         />
 
@@ -163,6 +172,7 @@ export function SignupForm() {
           type={showConfirmPassword ? 'text' : 'password'}
           placeholder="Confirm your password"
           autoComplete="new-password"
+          disabled={loading}
           required
         />
 

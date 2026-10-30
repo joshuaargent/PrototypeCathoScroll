@@ -37,12 +37,13 @@ export function SigninForm() {
       const supabase = createClient();
 
       const { error } = await supabase.auth.signInWithPassword({
-        email,
+        email: email.trim().toLowerCase(),
         password,
       });
 
       if (error) {
-        setError(error.message);
+        setError('Invalid email or password.');
+
         return;
       }
 
@@ -58,12 +59,18 @@ export function SigninForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="bg-accent-light/30 text-text-secondary rounded-xl p-4 text-sm">
+        Sign in to access your account, bookmarks, learning progress, and future CathoScroll
+        features.
+      </div>
+
       <Input
         label="Email"
         type="email"
         value={email}
         placeholder="you@example.com"
         autoComplete="email"
+        disabled={loading}
         onChange={(e) => setEmail(e.target.value)}
         required
       />
@@ -75,6 +82,7 @@ export function SigninForm() {
           value={password}
           placeholder="Enter your password"
           autoComplete="current-password"
+          disabled={loading}
           onChange={(e) => setPassword(e.target.value)}
           required
         />

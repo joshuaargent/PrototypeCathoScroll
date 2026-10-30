@@ -1,38 +1,38 @@
-import { PageHeader } from '@/components/layout/PageHeader';
-
 import { Card } from '@/components/ui/Card';
 
 import { SignupForm } from '@/components/auth/SignupForm';
 
 export default function SignupPage() {
   return (
-    <>
-      <div className="pt-8 md:pt-12">
-        <PageHeader
-          title="Create Account"
-          description="Start your learning journey with CathoScroll."
-        />
+    <main className="container py-12">
+      <div className="mt-8 mb-16 text-center">
+        <h1 className="text-5xl font-extrabold md:text-7xl">Join CathoScroll</h1>
 
-        <section className="pb-12 md:pb-16">
-          <div className="container">
-            <div className="mx-auto max-w-md">
-              <Card>
-                <div className="mb-8 text-center">
-                  <h2 className="text-text-primary text-2xl font-semibold">Join CathoScroll</h2>
-                </div>
-
-                <SignupForm />
-              </Card>
-
-              <div className="mt-6 text-center">
-                <p className="text-text-muted text-sm">
-                  Free accounts include bookmarks, progress tracking, and future community features.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
+        <p className="text-text-secondary mt-4 text-lg">
+          Start your learning journey one topic at a time.
+        </p>
       </div>
-    </>
+
+      <div className="mx-auto max-w-xl">
+        <Card>
+          <div className="mb-8 text-center">
+            <h2 className="text-text-primary text-2xl font-semibold">Create Account</h2>
+
+            <p className="text-text-secondary mt-2">
+              Create your free account to save bookmarks, track your progress, and access future
+              community features.
+            </p>
+          </div>
+
+          <SignupForm />
+        </Card>
+
+        <div className="mt-6 text-center">
+          <p className="text-text-muted text-sm">
+            Free accounts include bookmarks, progress tracking, and future learning features.
+          </p>
+        </div>
+      </div>
+    </main>
   );
 }

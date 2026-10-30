@@ -13,7 +13,7 @@ export default async function AccountPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect('/login');
+    redirect('/signin');
   }
 
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
