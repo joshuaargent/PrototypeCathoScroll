@@ -5,6 +5,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { ConditionalFooter } from '@/components/layout/ConditionalFooter';
 import { Toaster } from '@/components/ui/Toaster';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
+import { AuthProvider } from '@/components/providers/AuthProvider';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
@@ -122,12 +123,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="flex min-h-screen flex-col antialiased">
         <ThemeProvider>
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <ConditionalFooter />
-          <Toaster />
-          <Analytics />
-          <SpeedInsights />
+          <AuthProvider>
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <ConditionalFooter />
+            <Toaster />
+            <Analytics />
+            <SpeedInsights />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

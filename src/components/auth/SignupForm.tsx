@@ -1,0 +1,211 @@
+'use client';
+
+import { useState } from 'react';
+
+import Link from 'next/link';
+
+import { useRouter } from 'next/navigation';
+
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
+
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+
+import { createClient } from '@/lib/supabase/client';
+
+export function SignupForm() {
+  const router = useRouter();
+
+  const [loading, setLoading] = useState(false);
+
+  const [error, setError] = useState('');
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  async function handleSubmit(formData: FormData) {
+    setLoading(true);
+
+    setError('');
+
+    const username = (formData.get('username') as string).trim().toLowerCase();
+
+    const email = formData.get('email') as string;
+
+    const password = formData.get('password') as string;
+
+    const confirmPassword = formData.get('confirmPassword') as string;
+
+    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+
+    if (!usernameRegex.test(username)) {
+      setError(
+        'Username must be 3-20 characters and contain only letters, numbers, and underscores.'
+      );
+
+      setLoading(false);
+
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+
+      setLoading(false);
+
+      return;
+    }
+
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters.');
+
+      setLoading(false);
+
+      return;
+    }
+
+    try {
+      const supabase = createClient();
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            username,
+            display_name: username,
+          },
+        },
+      });
+
+      if (error) {
+        setError(error.message);
+
+        return;
+      }
+
+      if (data.user) {
+        const { error: profileError } = await supabase.from('profiles').insert({
+          id: data.user.id,
+
+          username,
+
+          display_name: username,
+
+          subscription_tier: 'free',
+        });
+
+        if (profileError) {
+          setError(profileError.message);
+
+          return;
+        }
+      }
+
+      router.push('/onboarding');
+    } catch {
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <form action={handleSubmit} className="space-y-6">
+      <div className="bg-accent-light/30 text-text-secondary rounded-xl p-4 text-sm">
+        Create an account to save bookmarks, track learning progress, and unlock future community
+        features.
+      </div>
+
+      <Input
+        label="Username"
+        name="username"
+        type="text"
+        placeholder="joshua"
+        hint="3-20 characters. Use letters, numbers and underscores only."
+        required
+      />
+
+      <Input
+        label="Email"
+        name="email"
+        type="email"
+        placeholder="you@example.com"
+        autoComplete="email"
+        required
+      />
+
+      <div className="relative">
+        <Input
+          label="Password"
+          name="password"
+          type={showPassword ? 'text' : 'password'}
+          placeholder="Create a password"
+          autoComplete="new-password"
+          hint="Minimum 8 characters."
+          required
+        />
+
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="text-text-muted hover:text-text-primary absolute top-[38px] right-3 transition-colors"
+        >
+          {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+        </button>
+      </div>
+
+      <div className="relative">
+        <Input
+          label="Confirm Password"
+          name="confirmPassword"
+          type={showConfirmPassword ? 'text' : 'password'}
+          placeholder="Confirm your password"
+          autoComplete="new-password"
+          required
+        />
+
+        <button
+          type="button"
+          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+          className="text-text-muted hover:text-text-primary absolute top-[38px] right-3 transition-colors"
+        >
+          {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+        </button>
+      </div>
+
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+          {error}
+        </div>
+      )}
+
+      <Button
+        type="submit"
+        size="lg"
+        className="w-full"
+        disabled={loading}
+        style={{
+          color: '#ffffff',
+        }}
+      >
+        {loading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Creating Account...
+          </>
+        ) : (
+          'Create Account'
+        )}
+      </Button>
+
+      <p className="text-text-secondary text-center text-sm">
+        Already have an account?{' '}
+        <Link href="/login" className="text-accent font-medium hover:underline">
+          Sign In
+        </Link>
+      </p>
+    </form>
+  );
+}

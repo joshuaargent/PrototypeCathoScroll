@@ -7,9 +7,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { mainNav } from '@/lib/constants';
 import { siteConfig } from '@/lib/constants';
-import { Menu, X, Sun, Moon } from 'lucide-react';
+import { Menu, X, Sun, Moon, User, UserCheck } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useTheme } from '@/components/providers/ThemeProvider';
+import { useAuth } from '@/components/providers/AuthProvider';
 
 // ============================================
 // Navbar Component
@@ -21,6 +22,7 @@ export function Navbar() {
   const [mobileMenuState, setMobileMenuState] = useState({ open: false, pathname });
   const isMobileMenuOpen = mobileMenuState.open && mobileMenuState.pathname === pathname;
   const { theme, toggleTheme } = useTheme();
+  const { isAuthenticated } = useAuth();
 
   // Handle scroll effect
   useEffect(() => {
@@ -80,20 +82,35 @@ export function Navbar() {
                 </Link>
               ))}
 
-              {/* Theme Toggle */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleTheme}
-                aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-                className="ml-1"
-              >
-                {theme === 'dark' ? (
-                  <Sun className="text-text-primary h-5 w-5" />
-                ) : (
-                  <Moon className="text-text-primary h-5 w-5" />
-                )}
-              </Button>
+              {/* Toggles */}
+              <div className="ml-1 flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleTheme}
+                  aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                >
+                  {theme === 'dark' ? (
+                    <Sun className="text-text-primary h-5 w-5" />
+                  ) : (
+                    <Moon className="text-text-primary h-5 w-5" />
+                  )}
+                </Button>
+
+                <Link href={isAuthenticated ? '/account' : '/login'}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label={isAuthenticated ? 'Account' : 'Sign In'}
+                  >
+                    {isAuthenticated ? (
+                      <UserCheck className="text-text-primary h-5 w-5" />
+                    ) : (
+                      <User className="text-text-primary h-5 w-5" />
+                    )}
+                  </Button>
+                </Link>
+              </div>
             </div>
 
             {/* Mobile Menu Button */}
@@ -168,6 +185,31 @@ export function Navbar() {
                       </>
                     )}
                   </button>
+                </div>
+
+                <div className="mb-6 flex justify-center">
+                  <Link
+                    href={isAuthenticated ? '/account' : '/login'}
+                    onClick={() =>
+                      setMobileMenuState({
+                        open: false,
+                        pathname,
+                      })
+                    }
+                    className="border-border bg-bg-card text-text-primary hover:bg-bg-secondary inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2 font-medium transition-all duration-200"
+                  >
+                    {isAuthenticated ? (
+                      <>
+                        <UserCheck className="h-4 w-4" />
+                        <span>Account</span>
+                      </>
+                    ) : (
+                      <>
+                        <User className="h-4 w-4" />
+                        <span>Sign In</span>
+                      </>
+                    )}
+                  </Link>
                 </div>
 
                 <div className="flex items-center justify-center gap-4">
