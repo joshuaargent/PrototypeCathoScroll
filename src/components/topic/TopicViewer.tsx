@@ -290,8 +290,6 @@ useEffect(() => {
   );
 
   flushSync(() => {
-    setSlideIndex(0);
-
     if (direction === 'next') {
       onNextTopic?.();
     } else {
@@ -533,7 +531,7 @@ const velocityY =
         >
           {/* TOP */}
 
-          {previousTopic && (
+          {(
             <div
   className="
     absolute
@@ -645,7 +643,7 @@ const velocityY =
 
           {/* BOTTOM */}
 
-          {nextTopic && (
+          {(
             <div
   className="
     absolute
