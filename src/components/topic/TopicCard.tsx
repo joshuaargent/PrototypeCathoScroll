@@ -68,26 +68,24 @@ export function TopicCard({ type, category, title, content, reference, onShare }
         </Badge>
 
         <div className="flex items-center gap-4">
-          <span className="text-text-muted text-xs tracking-wider uppercase">{title}</span>
-
-          {onShare && (
-            <button
-              type="button"
-              onPointerDown={(e) => e.stopPropagation()}
-              onTouchStart={(e) => e.stopPropagation()}
-              onClick={onShare}
-              aria-label="Share topic"
-              className="text-text-muted hover:bg-bg-secondary hover:text-text-primary flex h-11 w-11 items-center justify-center rounded-full transition-colors"
-            >
-              <Share2 className="h-5 w-5" />
-            </button>
-          )}
+          <span className="text-text-muted text-xs tracking-wider uppercase">{title}</span>(
+          <button
+            type="button"
+            onPointerDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+            onClick={onShare}
+            aria-label="Share topic"
+            className="text-text-muted hover:bg-bg-secondary hover:text-text-primary flex h-11 w-11 items-center justify-center rounded-full transition-colors"
+          >
+            <Share2 className="h-5 w-5" />
+          </button>
+          )
         </div>
       </div>
 
       {/* Content */}
 
-      <div className="flex flex-1 justify-center pt-12">
+      <div className="flex flex-1 items-center justify-center">
         <div className={cn('mx-auto text-center', type === 'question' ? 'max-w-2xl' : 'max-w-3xl')}>
           <div className={cn('text-text-primary leading-tight', contentClasses)}>{content}</div>
 
