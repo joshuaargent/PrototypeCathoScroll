@@ -103,7 +103,7 @@ export function SignupForm() {
         }
       }
 
-      router.push('/onboarding');
+      router.push('/account');
     } catch {
       setError('Something went wrong. Please try again.');
     } finally {
