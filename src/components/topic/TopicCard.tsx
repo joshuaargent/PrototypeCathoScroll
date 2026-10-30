@@ -68,7 +68,7 @@ export function TopicCard({ type, category, title, content, reference, onShare }
         </Badge>
 
         <div className="flex items-center gap-4">
-          <span className="text-text-muted text-xs tracking-wider uppercase">{title}</span>(
+          <span className="text-text-muted text-xs tracking-wider uppercase">{title}</span>
           <button
             type="button"
             onPointerDown={(e) => e.stopPropagation()}
@@ -79,7 +79,6 @@ export function TopicCard({ type, category, title, content, reference, onShare }
           >
             <Share2 className="h-5 w-5" />
           </button>
-          )
         </div>
       </div>
 
