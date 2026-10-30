@@ -1049,4 +1049,154 @@ export const topics: Topic[] = [
     text: 'And the Word became flesh and dwelt among us, full of grace and truth; we have beheld his glory, glory as of the only Son from the Father.'
   },
 },
+{
+  id: '40',
+
+  slug: 'what-do-you-mean-by-the-incarnation',
+
+  category: 'Jesus Christ',
+
+  question: 'What do you mean by the Incarnation?',
+
+  answer:
+    'I mean by the Incarnation that God the Son took to himself the nature of man: "the Word was made flesh".',
+
+  explanation:
+    'The Incarnation is the mystery by which the eternal Son of God became man without ceasing to be God. At the moment of the Annunciation, through the power of the Holy Spirit, the Son took on a true human nature in the womb of the Virgin Mary. This was not the creation of a new divine person, nor was it a temporary appearance in human form. Rather, the eternal Son truly became man while remaining fully divine. The Incarnation is central to Christianity because it reveals Gods immense love for humanity. By becoming man, Jesus was able to teach us, provide an example of holiness, suffer for our sins, and restore our relationship with the Father. The Word became flesh so that humanity might be reconciled with God and share in His divine life. Every Christmas celebrates this extraordinary mystery of Gods love made visible in Jesus Christ.',
+
+  catechism: {
+    paragraphs: ['456', '461', '463'],
+    text: 'The Word became flesh to save us by reconciling us with God. Believing that Jesus Christ is the Son of God come in the flesh is distinctive of the Christian faith. The Church calls the fact that the Son of God assumed a human nature in order to accomplish our salvation the Incarnation.'
+  },
+
+  scripture: {
+    reference: 'John 1:14',
+    text: 'And the Word became flesh and dwelt among us, full of grace and truth; we have beheld his glory, glory as of the only Son from the Father.'
+  },
+},
+{
+  id: '41',
+
+  slug: 'how-many-natures-are-there-in-jesus-christ',
+
+  category: 'Jesus Christ',
+
+  question: 'How many natures are there in Jesus Christ?',
+
+  answer:
+    'There are two natures in Jesus Christ, the nature of God and the nature of man.',
+
+  explanation:
+    'Jesus Christ possesses two complete natures: a divine nature and a human nature. He is fully God and fully man. The divine nature was not changed into a human nature, nor was the human nature absorbed into the divine. Both remain complete and distinct. As God, Jesus is eternal, all-powerful, and worthy of worship. As man, He was born, grew, learned, suffered, and died. The Church defended this truth throughout the centuries because it is essential to understanding who Jesus is and how He saves us. If Christ were not truly God, He could not reconcile humanity to God. If He were not truly man, He could not represent humanity or redeem human nature. The doctrine of the two natures safeguards both Christs divinity and His humanity and allows believers to understand the full meaning of the Incarnation.',
+
+  catechism: {
+    paragraphs: ['464', '467', '470'],
+    text: 'The Church confesses that Jesus is inseparably true God and true man. Following the holy Fathers, we unanimously teach and confess one and the same Son, perfect in divinity and perfect in humanity. The Son of God worked with human hands and thought with a human mind.'
+  },
+
+  scripture: {
+    reference: 'Colossians 2:9',
+    text: 'For in him the whole fullness of deity dwells bodily.'
+  },
+},
+{
+  id: '42',
+
+  slug: 'is-there-only-one-person-in-jesus-christ',
+
+  category: 'Jesus Christ',
+
+  question: 'Is there only one Person in Jesus Christ?',
+
+  answer:
+    'There is only one Person in Jesus Christ, which is the Person of God the Son.',
+
+  explanation:
+    'Although Jesus Christ possesses both a divine nature and a human nature, He is not two persons. He is one divine Person: the eternal Son of God. Everything Jesus does, whether through His divine nature or His human nature, is done by the one Person of the Son. This truth is sometimes called the hypostatic union, meaning the union of two natures in one divine Person. The Church teaches this doctrine to preserve the unity of Christ. When Jesus was born, suffered, taught, healed, and died, it was the Son of God acting through His human nature. Likewise, the miracles He performed revealed His divine power. Understanding that Jesus is one Person helps Catholics see that the same Jesus who walked the roads of Galilee is the eternal Son through whom all things were made. The Incarnation united God and man in the one Person of Christ forever.',
+
+  catechism: {
+    paragraphs: ['466', '467', '469'],
+    text: 'The Church confesses that the one whom she recognises as Jesus Christ is true God and true man. We confess one and the same Christ, Son, Lord, Only-begotten, acknowledged in two natures without confusion, change, division, or separation.'
+  },
+
+  scripture: {
+    reference: 'John 1:14',
+    text: 'And the Word became flesh and dwelt among us, full of grace and truth; we have beheld his glory, glory as of the only Son from the Father.'
+  },
+},
+{
+  id: '40',
+
+  slug: 'what-do-you-mean-by-the-incarnation',
+
+  category: 'Jesus Christ',
+
+  question: 'What do you mean by the Incarnation?',
+
+  answer:
+    'I mean by the Incarnation that God the Son took to himself the nature of man: "the Word was made flesh".',
+
+  explanation:
+    'The Incarnation is the mystery by which the eternal Son of God became man without ceasing to be God. At the moment of the Annunciation, through the power of the Holy Spirit, the Son took on a true human nature in the womb of the Virgin Mary. This was not the creation of a new divine person, nor was it a temporary appearance in human form. Rather, the eternal Son truly became man while remaining fully divine. The Incarnation is central to Christianity because it reveals Gods immense love for humanity. By becoming man, Jesus was able to teach us, provide an example of holiness, suffer for our sins, and restore our relationship with the Father. The Word became flesh so that humanity might be reconciled with God and share in His divine life. Every Christmas celebrates this extraordinary mystery of Gods love made visible in Jesus Christ.',
+
+  catechism: {
+    paragraphs: ['456', '461', '463'],
+    text: 'The Word became flesh to save us by reconciling us with God. Believing that Jesus Christ is the Son of God come in the flesh is distinctive of the Christian faith. The Church calls the fact that the Son of God assumed a human nature in order to accomplish our salvation the Incarnation.'
+  },
+
+  scripture: {
+    reference: 'John 1:14',
+    text: 'And the Word became flesh and dwelt among us, full of grace and truth; we have beheld his glory, glory as of the only Son from the Father.'
+  },
+},
+{
+  id: '41',
+
+  slug: 'how-many-natures-are-there-in-jesus-christ',
+
+  category: 'Jesus Christ',
+
+  question: 'How many natures are there in Jesus Christ?',
+
+  answer:
+    'There are two natures in Jesus Christ, the nature of God and the nature of man.',
+
+  explanation:
+    'Jesus Christ possesses two complete natures: a divine nature and a human nature. He is fully God and fully man. The divine nature was not changed into a human nature, nor was the human nature absorbed into the divine. Both remain complete and distinct. As God, Jesus is eternal, all-powerful, and worthy of worship. As man, He was born, grew, learned, suffered, and died. The Church defended this truth throughout the centuries because it is essential to understanding who Jesus is and how He saves us. If Christ were not truly God, He could not reconcile humanity to God. If He were not truly man, He could not represent humanity or redeem human nature. The doctrine of the two natures safeguards both Christs divinity and His humanity and allows believers to understand the full meaning of the Incarnation.',
+
+  catechism: {
+    paragraphs: ['464', '467', '470'],
+    text: 'The Church confesses that Jesus is inseparably true God and true man. Following the holy Fathers, we unanimously teach and confess one and the same Son, perfect in divinity and perfect in humanity. The Son of God worked with human hands and thought with a human mind.'
+  },
+
+  scripture: {
+    reference: 'Colossians 2:9',
+    text: 'For in him the whole fullness of deity dwells bodily.'
+  },
+},
+{
+  id: '42',
+
+  slug: 'is-there-only-one-person-in-jesus-christ',
+
+  category: 'Jesus Christ',
+
+  question: 'Is there only one Person in Jesus Christ?',
+
+  answer:
+    'There is only one Person in Jesus Christ, which is the Person of God the Son.',
+
+  explanation:
+    'Although Jesus Christ possesses both a divine nature and a human nature, He is not two persons. He is one divine Person: the eternal Son of God. Everything Jesus does, whether through His divine nature or His human nature, is done by the one Person of the Son. This truth is sometimes called the hypostatic union, meaning the union of two natures in one divine Person. The Church teaches this doctrine to preserve the unity of Christ. When Jesus was born, suffered, taught, healed, and died, it was the Son of God acting through His human nature. Likewise, the miracles He performed revealed His divine power. Understanding that Jesus is one Person helps Catholics see that the same Jesus who walked the roads of Galilee is the eternal Son through whom all things were made. The Incarnation united God and man in the one Person of Christ forever.',
+
+  catechism: {
+    paragraphs: ['466', '467', '469'],
+    text: 'The Church confesses that the one whom she recognises as Jesus Christ is true God and true man. We confess one and the same Christ, Son, Lord, Only-begotten, acknowledged in two natures without confusion, change, division, or separation.'
+  },
+
+  scripture: {
+    reference: 'John 1:14',
+    text: 'And the Word became flesh and dwelt among us, full of grace and truth; we have beheld his glory, glory as of the only Son from the Father.'
+  },
+},
 ]
