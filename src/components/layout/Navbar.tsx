@@ -97,7 +97,7 @@ export function Navbar() {
                   )}
                 </Button>
 
-                <Link href={isAuthenticated ? '/account' : '/login'}>
+                <Link href={isAuthenticated ? '/account' : '/signin'}>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -189,7 +189,7 @@ export function Navbar() {
 
                 <div className="mb-6 flex justify-center">
                   <Link
-                    href={isAuthenticated ? '/account' : '/login'}
+                    href={isAuthenticated ? '/account' : '/signin'}
                     onClick={() =>
                       setMobileMenuState({
                         open: false,

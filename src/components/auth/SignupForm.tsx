@@ -122,7 +122,7 @@ export function SignupForm() {
         label="Username"
         name="username"
         type="text"
-        placeholder="joshua"
+        placeholder="username"
         hint="3-20 characters. Use letters, numbers and underscores only."
         required
       />
@@ -202,7 +202,7 @@ export function SignupForm() {
 
       <p className="text-text-secondary text-center text-sm">
         Already have an account?{' '}
-        <Link href="/login" className="text-accent font-medium hover:underline">
+        <Link href="/signin" className="text-accent font-medium hover:underline">
           Sign In
         </Link>
       </p>

@@ -1,13 +1,21 @@
 'use client';
 
 import { useState } from 'react';
+
 import Link from 'next/link';
+
+import { useRouter } from 'next/navigation';
+
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 
-export function LoginForm() {
+import { createClient } from '@/lib/supabase/client';
+
+export function SigninForm() {
+  const router = useRouter();
+
   const [email, setEmail] = useState('');
 
   const [password, setPassword] = useState('');
@@ -16,13 +24,33 @@ export function LoginForm() {
 
   const [loading, setLoading] = useState(false);
 
+  const [error, setError] = useState('');
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
     setLoading(true);
 
+    setError('');
+
     try {
-      // Supabase login tomorrow
+      const supabase = createClient();
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        setError(error.message);
+        return;
+      }
+
+      router.refresh();
+
+      router.push('/account');
+    } catch {
+      setError('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -60,18 +88,20 @@ export function LoginForm() {
         </button>
       </div>
 
-      <div className="flex justify-end">
-        <Link href="/forgot-password" className="text-accent text-sm hover:underline">
-          Forgot Password?
-        </Link>
-      </div>
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+          {error}
+        </div>
+      )}
 
       <Button
         type="submit"
         size="lg"
         className="w-full"
         disabled={loading}
-        style={{ color: '#ffffff' }}
+        style={{
+          color: '#ffffff',
+        }}
       >
         {loading ? (
           <>
@@ -81,20 +111,6 @@ export function LoginForm() {
         ) : (
           'Sign In'
         )}
-      </Button>
-
-      <div className="relative py-2">
-        <div className="border-border absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-bg-primary text-text-muted px-3">Or</span>
-        </div>
-      </div>
-
-      <Button type="button" variant="secondary" size="lg" className="w-full">
-        Continue with Google
       </Button>
 
       <p className="text-text-secondary text-center text-sm">
