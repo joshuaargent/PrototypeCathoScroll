@@ -48,24 +48,6 @@ export default async function CategoryPage({
   return (
     <main className="container py-12">
 
-      {/* Back */}
-
-      <Link
-        href="/categories"
-        className="
-          inline-flex
-          items-center
-          text-sm
-          text-text-secondary
-          hover:text-text-primary
-          transition-colors
-        "
-      >
-        ← All Categories
-      </Link>
-
-      {/* Hero */}
-
       <section className="mt-8 mb-16">
 
         <Badge
