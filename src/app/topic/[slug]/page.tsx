@@ -42,20 +42,6 @@ export default async function TopicPage({ params }: Props) {
 
   return (
     <main className="container py-12">
-      <Link
-        href="/"
-        className="
-          inline-flex
-          items-center
-          text-sm
-          text-text-secondary
-          hover:text-text-primary
-          transition-colors
-        "
-      >
-        ← Explore Feed
-      </Link>
-
       <section className="mt-8 mb-16">
         <Badge variant="accent" size="lg">
           {topic.category}
