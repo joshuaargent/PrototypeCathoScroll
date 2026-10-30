@@ -1,6 +1,8 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { searchTopics } from '@/lib/search';
 
@@ -21,85 +23,76 @@ const suggestions = [
 ];
 
 export function SearchClient() {
-  const [query, setQuery] =
-    useState('');
+  const searchParams = useSearchParams();
 
-  const results = useMemo(
-    () => searchTopics(query),
-    [query]
-  );
+  const router = useRouter();
+
+  const pathname = usePathname();
+
+  const [query, setQuery] = useState(searchParams.get('q') ?? '');
+
+  const [debouncedQuery, setDebouncedQuery] = useState(query);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 200);
+
+    return () => clearTimeout(timeout);
+  }, [query]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+
+    if (query.trim()) {
+      params.set('q', query);
+    } else {
+      params.delete('q');
+    }
+
+    router.replace(`${pathname}?${params.toString()}`, {
+      scroll: false,
+    });
+  }, [query, pathname, router, searchParams]);
+
+  const results = useMemo(() => searchTopics(debouncedQuery), [debouncedQuery]);
 
   return (
     <div>
-      <SearchInput
-        value={query}
-        onChange={setQuery}
-      />
+      <SearchInput value={query} onChange={setQuery} />
 
       {!query && (
         <section className="mt-8">
-          <h2
-            className="
-              mb-4
-              text-sm
-              font-semibold
-              uppercase
-              tracking-wider
-              text-text-muted
-            "
-          >
+          <h2 className="text-text-muted mb-4 text-sm font-semibold tracking-wider uppercase">
             Popular Searches
           </h2>
 
           <div className="flex flex-wrap gap-2">
-            {suggestions.map(
-              (suggestion) => (
-                <button
-                  key={suggestion}
-                  type="button"
-                  onClick={() =>
-                    setQuery(
-                      suggestion
-                    )
-                  }
-                  className="
-                    rounded-full
-                    border
-                    border-border
-                    px-4
-                    py-2
-                    text-sm
-                    transition-colors
-                    hover:bg-bg-secondary
-                  "
-                >
-                  {suggestion}
-                </button>
-              )
-            )}
+            {suggestions.map((suggestion) => (
+              <button
+                key={suggestion}
+                type="button"
+                onClick={() => setQuery(suggestion)}
+                className="border-border hover:bg-bg-secondary rounded-full border px-4 py-2 text-sm transition-colors"
+              >
+                {suggestion}
+              </button>
+            ))}
           </div>
         </section>
       )}
 
-      {query && (
-        <div
-          className="
-            mt-6
-            text-sm
-            text-text-secondary
-          "
-        >
-          {results.length}{' '}
-          {results.length === 1
-            ? 'result'
-            : 'results'}
+      {debouncedQuery && (
+        <div className="text-text-secondary mt-6 flex items-center justify-between text-sm">
+          <span>
+            {results.length} {results.length === 1 ? 'result' : 'results'}
+          </span>
+
+          <span>Searching for "{debouncedQuery}"</span>
         </div>
       )}
 
-      <SearchResults
-        query={query}
-        results={results}
-      />
+      <SearchResults query={debouncedQuery} results={results} />
     </div>
   );
 }
