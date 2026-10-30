@@ -34,6 +34,7 @@ export const siteConfig: SiteConfig = {
 export const mainNav: NavItem[] = [
   { label: 'Home', href: '/' },
   { label: 'Categories', href: '/categories' },
+  { label: 'Search', href: '/search' },
   { label: 'Contact', href: '/contact' },
 ];
 
