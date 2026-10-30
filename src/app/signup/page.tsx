@@ -147,8 +147,7 @@ export default function SignupPage() {
         <h1 className="text-5xl font-extrabold md:text-7xl">Join CathoScroll</h1>
 
         <p className="text-text-secondary mt-4 max-w-2xl text-lg">
-          Create an account to save bookmarks, track progress, and continue learning across all your
-          devices.
+          Start your learning journey with CathoScroll.
         </p>
       </div>
 
