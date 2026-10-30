@@ -253,7 +253,7 @@ export default function AccountPage() {
         </p>
       </div>
 
-      <div className="max-w-3xl space-y-10">
+      <div className="space-y-10">
         <section>
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
@@ -266,7 +266,7 @@ export default function AccountPage() {
 
             <Link href={`/profile/${username}`}>
               <Button
-                size="lg"
+                size="sm"
                 style={{
                   color: '#ffffff',
                 }}
