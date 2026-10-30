@@ -110,14 +110,28 @@ export function TopicCard({
 
           {onShare && (
             <button
-              onClick={onShare}
-              aria-label="Share topic"
-              className="
-                text-text-muted
-                hover:text-text-primary
-                transition-colors
-              "
-            >
+  type="button"
+  onPointerDown={(e) =>
+    e.stopPropagation()
+  }
+  onTouchStart={(e) =>
+  e.stopPropagation()
+}
+  onClick={onShare}
+  aria-label="Share topic"
+  className="
+    flex
+    h-11
+    w-11
+    items-center
+    justify-center
+    rounded-full
+    text-text-muted
+    hover:bg-bg-secondary
+    hover:text-text-primary
+    transition-colors
+  "
+>
               <Share2 className="h-5 w-5" />
             </button>
           )}
