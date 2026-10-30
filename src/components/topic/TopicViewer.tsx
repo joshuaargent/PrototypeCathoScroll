@@ -85,6 +85,9 @@ export function TopicViewer({
   y.set(0);
 }, [slideIndex, topicIndex, x, y]);
 
+  const [isAnimating, setIsAnimating] =
+  useState(false);
+
   const currentSlide =
     slides[slideIndex];
 
@@ -98,6 +101,102 @@ export function TopicViewer({
     slides.length - 1
       ? slides[slideIndex + 1]
       : null;
+
+  
+useEffect(() => {
+  const handleKeyDown = async (
+    event: globalThis.KeyboardEvent
+  ) => {
+    if (event.repeat) return;
+    if (isAnimating) return;
+
+    const target =
+      event.target as HTMLElement;
+
+    if (
+      target instanceof HTMLInputElement ||
+      target instanceof HTMLTextAreaElement ||
+      target.isContentEditable
+    ) {
+      return;
+    }
+
+    switch (event.key) {
+      case 'ArrowLeft':
+        event.preventDefault();
+
+        if (previousSlide) {
+          await moveSlide(
+            'previous'
+          );
+        }
+        break;
+
+      case 'ArrowRight':
+        event.preventDefault();
+
+        if (nextSlide) {
+          await moveSlide(
+            'next'
+          );
+        }
+        break;
+
+      case 'ArrowUp':
+        event.preventDefault();
+
+        if (previousTopic) {
+          await moveTopic(
+            'previous'
+          );
+        }
+        break;
+
+      case 'ArrowDown':
+        event.preventDefault();
+
+        if (nextTopic) {
+          await moveTopic(
+            'next'
+          );
+        }
+        break;
+
+      case ' ':
+        event.preventDefault();
+
+        if (event.shiftKey) {
+          if (previousSlide) {
+            await moveSlide(
+              'previous'
+            );
+          }
+        } else {
+          if (nextSlide) {
+            await moveSlide('next');
+          }
+        }
+        break;
+    }
+  };
+
+  window.addEventListener(
+    'keydown',
+    handleKeyDown
+  );
+
+  return () =>
+    window.removeEventListener(
+      'keydown',
+      handleKeyDown
+    );
+}, [
+  previousSlide,
+  nextSlide,
+  previousTopic,
+  nextTopic,
+  isAnimating,
+]);
 
   const shareTopic = async () => {
     try {
@@ -141,6 +240,11 @@ export function TopicViewer({
     | 'next'
     | 'previous'
 ) => {
+  if (isAnimating) return;
+
+  setIsAnimating(true);
+
+  try {
   const width =
     window.innerWidth;
 
@@ -164,6 +268,9 @@ export function TopicViewer({
         : prev - 1
     );
   });
+} finally {
+  setIsAnimating(false);
+}
 };
 
   const moveTopic = async (
@@ -171,6 +278,11 @@ export function TopicViewer({
     | 'next'
     | 'previous'
 ) => {
+  if (isAnimating) return;
+
+  setIsAnimating(true);
+
+  try {
   const height =
     window.innerHeight;
 
@@ -195,7 +307,10 @@ export function TopicViewer({
     } else {
       onPreviousTopic?.();
     }
-  });
+  }); 
+} finally {
+  setIsAnimating(false);
+}
 };
 
   const handlePointerDown = (
