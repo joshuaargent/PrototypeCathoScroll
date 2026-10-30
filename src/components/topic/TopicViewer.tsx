@@ -154,27 +154,20 @@ useEffect(() => {
 
       case 'ArrowDown':
         event.preventDefault();
-
-        if (nextTopic) {
           await moveTopic(
             'next'
           );
-        }
         break;
 
       case ' ':
         event.preventDefault();
 
         if (event.shiftKey) {
-          if (previousSlide) {
-            await moveSlide(
-              'previous'
-            );
+          if (previousTopic) {
+            await moveTopic('previous');
           }
         } else {
-          if (nextSlide) {
-            await moveSlide('next');
-          }
+          await moveTopic('next');
         }
         break;
     }
@@ -471,16 +464,14 @@ const velocityY =
 
         if (
   commit &&
-  dy < 0 &&
-  nextTopic
+  dy < 0
 ) {
           await moveTopic(
             'next'
           );
         } else if (
   commit &&
-  dy > 0 &&
-  previousTopic
+  dy > 0
 ) {
           await moveTopic(
             'previous'
