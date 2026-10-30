@@ -32,7 +32,7 @@ export default function ContactPage() {
     <>
       <PageHeader
         title="Contact"
-        description="Need help, found a bug, or have a question you'd like added to CathoScroll? We'd love to hear from you."
+        description="Need help, found a bug, or have a question you'd like added? We'd love to hear from you."
       />
 
       <section className="pb-12 md:pb-16">
