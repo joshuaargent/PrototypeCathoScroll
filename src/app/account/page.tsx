@@ -1,104 +1,394 @@
-import { redirect } from 'next/navigation';
+'use client';
 
-import { createClient } from '@/lib/supabase/server';
+import { useEffect, useState } from 'react';
 
-import { Badge } from '@/components/ui/Badge';
+import Link from 'next/link';
+
+import { useRouter } from 'next/navigation';
+
+import { Loader2 } from 'lucide-react';
+
 import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 
-export default async function AccountPage() {
-  const supabase = await createClient();
+import { createClient } from '@/lib/supabase/client';
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+const RESERVED_USERNAMES = [
+  'admin',
+  'administrator',
+  'support',
+  'help',
+  'owner',
+  'root',
+  'system',
+  'staff',
+  'moderator',
+  'cathoscroll',
+];
 
-  if (!user) {
-    redirect('/signin');
+export default function AccountPage() {
+  const router = useRouter();
+
+  const [loading, setLoading] = useState(true);
+
+  const [saving, setSaving] = useState(false);
+
+  const [signingOut, setSigningOut] = useState(false);
+
+  const [message, setMessage] = useState('');
+
+  const [error, setError] = useState('');
+
+  const [email, setEmail] = useState('');
+
+  const [displayName, setDisplayName] = useState('');
+
+  const [username, setUsername] = useState('');
+
+  const [bio, setBio] = useState('');
+
+  const [subscriptionTier, setSubscriptionTier] = useState('free');
+
+  const [newPassword, setNewPassword] = useState('');
+
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  useEffect(() => {
+    async function loadAccount() {
+      const supabase = createClient();
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        router.replace('/signin');
+        return;
+      }
+
+      setEmail(user.email ?? '');
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (profile) {
+        setDisplayName(profile.display_name ?? '');
+
+        setUsername(profile.username ?? '');
+
+        setBio(profile.bio ?? '');
+
+        setSubscriptionTier(profile.subscription_tier ?? 'free');
+      }
+
+      setLoading(false);
+    }
+
+    loadAccount();
+  }, [router]);
+
+  async function saveProfile() {
+    setSaving(true);
+
+    setError('');
+    setMessage('');
+
+    const cleanedUsername = username.trim().toLowerCase();
+
+    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+
+    if (RESERVED_USERNAMES.includes(cleanedUsername)) {
+      setError('That username is unavailable.');
+
+      setSaving(false);
+
+      return;
+    }
+
+    if (!usernameRegex.test(cleanedUsername)) {
+      setError(
+        'Username must be 3-20 characters and contain only letters, numbers, and underscores.'
+      );
+
+      setSaving(false);
+
+      return;
+    }
+
+    if (displayName.trim().length < 2) {
+      setError('Display name must be at least 2 characters.');
+
+      setSaving(false);
+
+      return;
+    }
+
+    if (bio.length > 250) {
+      setError('Bio cannot exceed 250 characters.');
+
+      setSaving(false);
+
+      return;
+    }
+
+    if (newPassword && newPassword.length < 8) {
+      setError('Password must be at least 8 characters.');
+
+      setSaving(false);
+
+      return;
+    }
+
+    if (newPassword && newPassword !== confirmPassword) {
+      setError('Passwords do not match.');
+
+      setSaving(false);
+
+      return;
+    }
+
+    try {
+      const supabase = createClient();
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        setError('You are not signed in.');
+
+        return;
+      }
+
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          display_name: displayName.trim(),
+
+          username: cleanedUsername,
+
+          bio: bio.trim() || null,
+        })
+        .eq('id', user.id);
+
+      if (profileError) {
+        if (profileError.code === '23505') {
+          setError('That username is already taken.');
+        } else {
+          setError('Unable to save profile.');
+        }
+
+        return;
+      }
+
+      if (email !== user.email) {
+        const { error: emailError } = await supabase.auth.updateUser({
+          email: email.trim().toLowerCase(),
+        });
+
+        if (emailError) {
+          setError(emailError.message);
+
+          return;
+        }
+      }
+
+      if (newPassword.trim()) {
+        const { error: passwordError } = await supabase.auth.updateUser({
+          password: newPassword,
+        });
+
+        if (passwordError) {
+          setError(passwordError.message);
+
+          return;
+        }
+      }
+
+      setNewPassword('');
+      setConfirmPassword('');
+
+      setMessage('Your changes have been saved.');
+
+      router.refresh();
+    } catch {
+      setError('Something went wrong.');
+    } finally {
+      setSaving(false);
+    }
   }
 
-  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-
   async function signOut() {
-    'use server';
+    setSigningOut(true);
 
-    const supabase = await createClient();
+    const supabase = createClient();
 
     await supabase.auth.signOut();
 
-    redirect('/');
+    router.refresh();
+
+    router.replace('/');
+  }
+
+  if (loading) {
+    return (
+      <main className="container py-16">
+        <div className="flex justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </main>
+    );
   }
 
   return (
     <main className="container py-12">
-      <div className="mt-8 mb-16">
+      <div className="mt-8 mb-10">
         <h1 className="text-5xl font-extrabold md:text-7xl">Account</h1>
 
         <p className="text-text-secondary mt-4 text-lg">
-          Welcome back, {profile?.display_name ?? 'Friend'}.
+          Manage your public profile, account details, and password.
         </p>
-
-        <div className="mt-6 flex flex-wrap gap-3">
-          <Badge variant="accent" size="lg">
-            @{profile?.username ?? 'username'}
-          </Badge>
-
-          <Badge variant="accent" size="lg">
-            {profile?.subscription_tier === 'premium' ? 'Premium' : 'Free Account'}
-          </Badge>
-        </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <article className="border-border rounded-2xl border p-6">
-          <p className="text-text-muted text-sm">Email Address</p>
+      <div className="max-w-3xl space-y-10">
+        <section>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-bold">Public Profile</h2>
 
-          <p className="mt-3 text-lg font-medium">{user.email}</p>
-        </article>
+              <p className="text-text-secondary mt-2">
+                This is how people will see you on CathoScroll.
+              </p>
+            </div>
 
-        <article className="border-border rounded-2xl border p-6">
-          <p className="text-text-muted text-sm">Username</p>
+            <Link href={`/profile/${username}`}>
+              <Button
+                size="lg"
+                style={{
+                  color: '#ffffff',
+                }}
+              >
+                View Public Profile
+              </Button>
+            </Link>
+          </div>
+        </section>
 
-          <p className="mt-3 text-lg font-medium">@{profile?.username}</p>
-        </article>
+        <section className="space-y-6">
+          <Input
+            label="Display Name"
+            value={displayName}
+            disabled={saving}
+            onChange={(e) => setDisplayName(e.target.value)}
+          />
 
-        <article className="border-border rounded-2xl border p-6">
-          <p className="text-text-muted text-sm">Membership</p>
+          <Input
+            label="Username"
+            value={username}
+            disabled={saving}
+            onChange={(e) => setUsername(e.target.value)}
+            hint="3-20 characters. Used for your public profile URL."
+          />
 
-          <p className="mt-3 text-lg font-medium">
-            {profile?.subscription_tier === 'premium' ? 'Premium' : 'Free'}
-          </p>
-        </article>
+          <div className="space-y-1.5">
+            <label className="text-text-primary text-sm font-medium">Bio</label>
 
-        <article className="border-border rounded-2xl border p-6">
-          <p className="text-text-muted text-sm">Joined</p>
+            <textarea
+              value={bio}
+              maxLength={250}
+              disabled={saving}
+              onChange={(e) => setBio(e.target.value)}
+              rows={5}
+              className="border-border bg-bg-card w-full rounded-lg border p-4"
+              placeholder="Tell people a little about yourself..."
+            />
 
-          <p className="mt-3 text-lg font-medium">
-            {profile?.created_at
-              ? new Date(profile.created_at).toLocaleDateString('en-GB', {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric',
-                })
-              : 'Recently'}
-          </p>
-        </article>
-      </div>
+            <p className="text-text-muted text-sm">{bio.length}/250</p>
+          </div>
+        </section>
 
-      <section className="border-border mt-16 border-t pt-8">
-        <div className="max-w-md">
-          <h2 className="text-2xl font-bold">Sign Out</h2>
+        <section className="space-y-6">
+          <h2 className="text-2xl font-bold">Account Settings</h2>
 
-          <p className="text-text-secondary mt-2">
-            Sign out of your CathoScroll account on this device.
-          </p>
+          <Input
+            label="Email Address"
+            type="email"
+            value={email}
+            disabled={saving}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-          <form action={signOut} className="mt-6">
-            <Button type="submit" variant="secondary" size="lg">
-              Sign Out
-            </Button>
-          </form>
+          <Input
+            label="New Password"
+            type="password"
+            value={newPassword}
+            disabled={saving}
+            onChange={(e) => setNewPassword(e.target.value)}
+            hint="Minimum 8 characters. Leave blank to keep your current password."
+          />
+
+          <Input
+            label="Confirm New Password"
+            type="password"
+            value={confirmPassword}
+            disabled={saving}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            hint="Required when changing your password."
+          />
+        </section>
+
+        <section>
+          <div className="border-border rounded-xl border p-6">
+            <p className="text-text-muted text-sm">Membership</p>
+
+            <p className="mt-2 text-lg font-medium capitalize">{subscriptionTier}</p>
+          </div>
+        </section>
+
+        {error && (
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-600">{error}</div>
+        )}
+
+        {message && (
+          <div className="rounded-lg border border-green-200 bg-green-50 p-4 text-green-600">
+            {message}
+          </div>
+        )}
+
+        <div className="flex flex-wrap gap-4">
+          <Button
+            onClick={saveProfile}
+            disabled={saving}
+            size="lg"
+            style={{
+              color: '#ffffff',
+            }}
+          >
+            {saving ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              'Save Changes'
+            )}
+          </Button>
+
+          <Button variant="secondary" size="lg" disabled={signingOut} onClick={signOut}>
+            {signingOut ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Signing Out...
+              </>
+            ) : (
+              'Sign Out'
+            )}
+          </Button>
         </div>
-      </section>
+      </div>
     </main>
   );
 }
