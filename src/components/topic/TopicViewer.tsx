@@ -45,6 +45,8 @@ export function TopicViewer({
     y: 0,
   });
 
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const currentTopic = topics[topicIndex];
 
   const previousTopic = topics[(topicIndex - 1 + topics.length) % topics.length];
@@ -174,11 +176,11 @@ export function TopicViewer({
         ease: 'easeOut',
       });
 
-      x.jump(0);
-
       flushSync(() => {
         setSlideIndex((prev) => (direction === 'next' ? prev + 1 : prev - 1));
       });
+
+      x.jump(0);
     } finally {
       setIsAnimating(false);
     }
@@ -190,16 +192,12 @@ export function TopicViewer({
     setIsAnimating(true);
 
     try {
-      const containerRef = useRef<HTMLDivElement>(null);
-
       const height = containerRef.current?.clientHeight ?? window.innerHeight;
 
       await animate(y, direction === 'next' ? -height : height, {
         duration: 0.2,
         ease: 'easeOut',
       });
-
-      y.jump(0);
 
       flushSync(() => {
         if (direction === 'next') {
@@ -208,6 +206,8 @@ export function TopicViewer({
           onPreviousTopic?.();
         }
       });
+
+      y.jump(0);
     } finally {
       setIsAnimating(false);
     }
@@ -323,7 +323,7 @@ export function TopicViewer({
         <TopicProgress current={slideIndex} total={slides.length} />
       </div>
 
-      <div className="relative flex-1 overflow-hidden pt-1">
+      <div ref={containerRef} className="relative flex-1 overflow-hidden pt-1">
         <motion.div
           style={{
             x,
