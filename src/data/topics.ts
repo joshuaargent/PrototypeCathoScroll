@@ -599,4 +599,154 @@ export const topics: Topic[] = [
     text: 'Where shall I go from your Spirit? Or where shall I flee from your presence? If I ascend to heaven, you are there! If I make my bed in Sheol, you are there!'
   },
 },
+{
+  id: '22',
+
+  slug: 'does-god-know-and-see-all-things',
+
+  category: 'God',
+
+  question: 'Does God know and see all things?',
+
+  answer:
+    'God knows and sees all things, even our most secret thoughts.',
+
+  explanation:
+    'God possesses perfect knowledge. Nothing is hidden from Him, whether it takes place in the past, present, or future. He knows every action, every word, and even the deepest thoughts and intentions of the human heart. This truth should not cause fear in those who love God, but rather confidence and trust. Unlike human beings, God never misunderstands us or judges based only on appearances. He sees the whole truth about every person and every situation. Gods complete knowledge also means that He is able to guide His creation with perfect wisdom and providence. He knows our struggles, our hopes, our weaknesses, and our needs even before we express them in prayer. Because God sees all things, Christians are called to live honestly before Him and to seek purity not only in outward actions but also in their thoughts and intentions.',
+
+  catechism: {
+    paragraphs: ['208', '270', '271'],
+    text: 'God sees all things and knows all things. Nothing that exists is hidden from him. The divine power is universal and mysterious. God is the Lord of all hearts and knows the secrets of men.'
+  },
+
+  scripture: {
+    reference: 'Hebrews 4:13',
+    text: 'And before him no creature is hidden, but all are open and laid bare to the eyes of him with whom we have to do.'
+  },
+},
+{
+  id: '23',
+
+  slug: 'has-god-any-body',
+
+  category: 'God',
+
+  question: 'Has God any body?',
+
+  answer:
+    'God has no body; he is a spirit.',
+
+  explanation:
+    'God is not a physical being and is not limited by matter, size, shape, or location. As a pure spirit, God exists beyond the limitations of the material universe that He created. Because God is spirit, He is present everywhere and is not confined to any particular place. Sometimes Scripture speaks of Gods "hand" or "face", but these descriptions are figurative language that help human beings understand something about Gods actions and presence. The fact that God is spirit does not make Him distant or unreal. Rather, it means that He is infinitely greater than anything in creation. In Jesus Christ, God the Son took on a true human nature and a real human body, but the divine nature itself remains spiritual. Understanding that God is spirit helps us recognise His transcendence while also appreciating His closeness to all who seek Him.',
+
+  catechism: {
+    paragraphs: ['370', '212', '239'],
+    text: 'God is neither man nor woman: he is God. God transcends human fatherhood and motherhood, though he is their origin and standard. God is pure spirit in which there is no place for the differences between the sexes.'
+  },
+
+  scripture: {
+    reference: 'John 4:24',
+    text: 'God is spirit, and those who worship him must worship in spirit and truth.'
+  },
+},
+{
+  id: '24',
+
+  slug: 'is-there-only-one-god',
+
+  category: 'God',
+
+  question: 'Is there only one God?',
+
+  answer:
+    'There is only one God.',
+
+  explanation:
+    'The belief in one God is at the heart of the Catholic faith. Although many ancient cultures believed in numerous gods, God revealed to Israel that He alone is the true God and that there is no other besides Him. Christianity continues this belief and teaches that there is one divine being who created and sustains all things. This truth does not contradict the doctrine of the Trinity. Catholics believe in one God who exists eternally as three divine Persons: Father, Son, and Holy Spirit. The three Persons are not three gods but one God. Belief in one God provides unity and meaning to all of reality because everything comes from the same Creator and is directed toward Him. Christians therefore worship God alone and reject every form of idolatry that places created things in the place that belongs to God.',
+
+  catechism: {
+    paragraphs: ['200', '201', '228'],
+    text: 'These are the words with which the Niceno-Constantinopolitan Creed begins its profession of faith in the one God. To confess that God is One is rooted in divine revelation. Hear, O Israel: The Lord our God is one Lord.'
+  },
+
+  scripture: {
+    reference: 'Deuteronomy 6:4',
+    text: 'Hear, O Israel: The Lord our God is one Lord.'
+  },
+},
+{
+  id: '25',
+
+  slug: 'are-there-three-persons-in-god',
+
+  category: 'God',
+
+  question: 'Are there three Persons in God?',
+
+  answer:
+    'There are three Persons in God; God the Father, God the Son, and God the Holy Spirit.',
+
+  explanation:
+    'God has revealed Himself as a Trinity of Persons. The Father, the Son, and the Holy Spirit are not merely different names or roles played by God, but three distinct divine Persons. The Father is not the Son, the Son is not the Holy Spirit, and the Holy Spirit is not the Father. Each Person possesses intellect, will, and the fullness of the divine nature. This truth was gradually revealed throughout salvation history and fully revealed by Jesus Christ. At His Baptism, for example, the Son stood in the Jordan, the Holy Spirit descended like a dove, and the Fathers voice was heard from Heaven. Although the mystery of the Trinity surpasses human understanding, it lies at the heart of Christian faith because it reveals that God is an eternal communion of love. Every Christian is baptised in the name of the Father, the Son, and the Holy Spirit and is called to share in their divine life.',
+
+  catechism: {
+    paragraphs: ['232', '253', '254'],
+    text: 'The mystery of the Most Holy Trinity is the central mystery of Christian faith and life. The Father is that which the Son is, the Son that which the Father is, the Father and the Son that which the Holy Spirit is, one God by nature.'
+  },
+
+  scripture: {
+    reference: 'Matthew 28:19',
+    text: 'Go therefore and make disciples of all nations, baptising them in the name of the Father and of the Son and of the Holy Spirit.'
+  },
+},
+{
+  id: '26',
+
+  slug: 'are-the-three-persons-three-gods',
+
+  category: 'God',
+
+  question: 'Are the three Persons three Gods?',
+
+  answer:
+    'These three Persons are not three Gods: the Father, the Son, and the Holy Spirit are all one and the same God.',
+
+  explanation:
+    'The doctrine of the Trinity does not teach the existence of three separate gods. Christianity is strictly monotheistic, meaning that there is only one God. The Father, Son, and Holy Spirit are distinct Persons, yet they possess one and the same divine nature. Each Person is fully God, not one-third of God, but there are not three Gods because there is only one divine essence. This mystery cannot be fully comprehended by human reason, yet it does not contradict reason. Throughout history, the Church has carefully defended this truth against misunderstandings that either divided God into three separate beings or denied the distinction between the Persons. The mystery of the Trinity teaches that Gods very nature is love, because from all eternity the Father, Son, and Holy Spirit exist in perfect communion. Christians therefore worship one God in three divine Persons.',
+
+  catechism: {
+    paragraphs: ['253', '255'],
+    text: 'The Trinity is One. We do not confess three Gods, but one God in three Persons, the consubstantial Trinity. The divine Persons do not share the one divinity among themselves but each of them is God whole and entire.'
+  },
+
+  scripture: {
+    reference: 'Deuteronomy 6:4',
+    text: 'Hear, O Israel: The Lord our God is one Lord.'
+  },
+},
+{
+  id: '27',
+
+  slug: 'what-is-the-blessed-trinity',
+
+  category: 'God',
+
+  question: 'What is the mystery of the three Persons in one God called?',
+
+  answer:
+    'The mystery of the three Persons in one God is called the mystery of the Blessed Trinity.',
+
+  explanation:
+    'The Blessed Trinity is the greatest mystery of the Christian faith because it concerns the inner life of God Himself. Human reason can know that God exists, but only God could reveal that He is Father, Son, and Holy Spirit. The Trinity is not a puzzle to be solved but a reality to be believed and contemplated. Every major aspect of Catholic life is connected to this mystery. Christians are baptised in the name of the Trinity, pray to the Father through the Son in the Holy Spirit, and are called to share forever in the life of the Trinity in Heaven. The mystery reminds us that God is not solitary but an eternal communion of love. Although we cannot fully understand the Trinity in this life, we can truly know what God has revealed about Himself and worship Him with faith and trust.',
+
+  catechism: {
+    paragraphs: ['234', '237', '261'],
+    text: 'The mystery of the Most Holy Trinity is the central mystery of Christian faith and life. God has left traces of his Trinitarian being in creation and in his Revelation throughout the Old Testament, but his inmost Being as Holy Trinity is a mystery inaccessible to reason alone.'
+  },
+
+  scripture: {
+    reference: '2 Corinthians 13:14',
+    text: 'The grace of the Lord Jesus Christ and the love of God and the fellowship of the Holy Spirit be with you all.'
+  },
+},
 ]
