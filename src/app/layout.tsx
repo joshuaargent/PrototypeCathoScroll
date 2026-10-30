@@ -123,7 +123,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="flex min-h-screen flex-col antialiased">
         <ThemeProvider>
           <Navbar />
-          <main className="flex flex-1 flex-col overflow-hidden">{children}</main>
+          <main className="flex-1">{children}</main>
           <ConditionalFooter />
           <Toaster />
           <Analytics />
