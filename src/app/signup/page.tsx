@@ -132,8 +132,15 @@ export default function SignupPage() {
         return;
       }
 
-      router.refresh();
-      router.push('/account');
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) {
+        setError('Unable to establish session.');
+        return;
+      }
+
+      router.replace('/account');
     } catch {
       setError('Something went wrong. Please try again.');
     } finally {
@@ -246,12 +253,14 @@ export default function SignupPage() {
             )}
           </Button>
 
-          <p className="text-text-secondary text-center text-sm">
-            Already have an account?{' '}
-            <Link href="/signin" className="text-accent font-medium hover:underline">
-              Sign In
-            </Link>
-          </p>
+          <div className="flex justify-center">
+            <p className="text-text-secondary text-sm">
+              Already have an account?{' '}
+              <Link href="/signin" className="text-accent font-medium hover:underline">
+                Sign In
+              </Link>
+            </p>
+          </div>
         </form>
       </div>
     </main>
