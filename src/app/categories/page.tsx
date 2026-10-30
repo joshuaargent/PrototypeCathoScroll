@@ -114,20 +114,6 @@ export default function CategoriesPage() {
     <main className="container py-12">
       <div className="mb-12">
 
-        <Link
-          href="/"
-          className="
-            mb-6
-            inline-flex
-            text-sm
-            text-text-secondary
-            transition-colors
-            hover:text-text-primary
-          "
-        >
-          ← Explore Feed
-        </Link>
-
         <h1
           className="
             text-5xl
