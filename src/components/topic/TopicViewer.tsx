@@ -55,10 +55,6 @@ export function TopicViewer({
 
   const slides = useMemo(() => getTopicSlides(currentTopic), [currentTopic]);
 
-  useEffect(() => {
-    setSlideIndex(0);
-  }, [topicIndex]);
-
   const [isAnimating, setIsAnimating] = useState(false);
 
   const currentSlide = slides[slideIndex];
@@ -200,6 +196,8 @@ export function TopicViewer({
       });
 
       flushSync(() => {
+        setSlideIndex(0);
+
         if (direction === 'next') {
           onNextTopic?.();
         } else {
