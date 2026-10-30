@@ -2,8 +2,8 @@ import { redirect } from 'next/navigation';
 
 import { createClient } from '@/lib/supabase/server';
 
+import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
 
 export default async function AccountPage() {
   const supabase = await createClient();
@@ -28,72 +28,77 @@ export default async function AccountPage() {
     redirect('/');
   }
 
-  const displayName = profile?.display_name ?? 'User';
-
-  const username = profile?.username ?? 'username';
-
-  const initials = displayName
-    .split(' ')
-    .map((word) => word[0]?.toUpperCase())
-    .slice(0, 2)
-    .join('');
-
   return (
-    <section className="py-12 md:py-16">
-      <div className="container max-w-2xl">
-        <div className="space-y-6">
-          <div className="flex flex-col items-center text-center">
-            <div className="bg-accent-light text-accent flex h-24 w-24 items-center justify-center rounded-full text-3xl font-bold">
-              {initials}
-            </div>
+    <main className="container py-12">
+      <div className="mt-8 mb-16">
+        <h1 className="text-5xl font-extrabold md:text-7xl">Account</h1>
 
-            <h1 className="text-text-primary mt-6 text-3xl font-bold">{displayName}</h1>
+        <p className="text-text-secondary mt-4 text-lg">
+          Welcome back, {profile?.display_name ?? 'Friend'}.
+        </p>
 
-            <p className="text-text-secondary mt-2 text-lg">@{username}</p>
-          </div>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Badge variant="accent" size="lg">
+            @{profile?.username ?? 'username'}
+          </Badge>
 
-          <Card>
-            <div className="space-y-6">
-              <div>
-                <p className="text-text-muted text-sm">Email Address</p>
+          <Badge variant="accent" size="lg">
+            {profile?.subscription_tier === 'premium' ? 'Premium' : 'Free Account'}
+          </Badge>
+        </div>
+      </div>
 
-                <p className="text-text-primary mt-1 font-medium">{user.email}</p>
-              </div>
+      <div className="grid gap-6 md:grid-cols-2">
+        <article className="border-border rounded-2xl border p-6">
+          <p className="text-text-muted text-sm">Email Address</p>
 
-              <div>
-                <p className="text-text-muted text-sm">Membership</p>
+          <p className="mt-3 text-lg font-medium">{user.email}</p>
+        </article>
 
-                <div className="bg-accent-light text-accent mt-2 inline-flex items-center rounded-full px-3 py-1 text-sm font-medium">
-                  Free Plan
-                </div>
-              </div>
+        <article className="border-border rounded-2xl border p-6">
+          <p className="text-text-muted text-sm">Username</p>
 
-              <div>
-                <p className="text-text-muted text-sm">Username</p>
+          <p className="mt-3 text-lg font-medium">@{profile?.username}</p>
+        </article>
 
-                <p className="text-text-primary mt-1 font-medium">@{username}</p>
-              </div>
-            </div>
-          </Card>
+        <article className="border-border rounded-2xl border p-6">
+          <p className="text-text-muted text-sm">Membership</p>
 
-          <Card>
-            <div className="space-y-4 text-center">
-              <h2 className="text-text-primary text-lg font-semibold">What's Next?</h2>
+          <p className="mt-3 text-lg font-medium">
+            {profile?.subscription_tier === 'premium' ? 'Premium' : 'Free'}
+          </p>
+        </article>
 
-              <p className="text-text-secondary">
-                Bookmarks, progress tracking, learning streaks, achievements, and community features
-                will appear here as CathoScroll grows.
-              </p>
-            </div>
-          </Card>
+        <article className="border-border rounded-2xl border p-6">
+          <p className="text-text-muted text-sm">Joined</p>
 
-          <form action={signOut}>
-            <Button type="submit" variant="secondary" size="lg" className="w-full">
+          <p className="mt-3 text-lg font-medium">
+            {profile?.created_at
+              ? new Date(profile.created_at).toLocaleDateString('en-GB', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                })
+              : 'Recently'}
+          </p>
+        </article>
+      </div>
+
+      <section className="border-border mt-16 border-t pt-8">
+        <div className="max-w-md">
+          <h2 className="text-2xl font-bold">Sign Out</h2>
+
+          <p className="text-text-secondary mt-2">
+            Sign out of your CathoScroll account on this device.
+          </p>
+
+          <form action={signOut} className="mt-6">
+            <Button type="submit" variant="secondary" size="lg">
               Sign Out
             </Button>
           </form>
         </div>
-      </div>
-    </section>
+      </section>
+    </main>
   );
 }
