@@ -749,4 +749,154 @@ export const topics: Topic[] = [
     text: 'The grace of the Lord Jesus Christ and the love of God and the fellowship of the Holy Spirit be with you all.'
   },
 },
+{
+  id: '28',
+
+  slug: 'what-do-you-mean-by-a-mystery',
+
+  category: 'God',
+
+  question: 'What do you mean by a mystery?',
+
+  answer:
+    'By a mystery I mean a truth which is above reason, but revealed by God.',
+
+  explanation:
+    'A mystery is not something irrational or impossible. Rather, it is a truth that human reason alone could never fully discover or comprehend without Gods help. Because God is infinite and human beings are finite, there are aspects of His nature and plan that surpass our understanding. Examples include the Blessed Trinity, the Incarnation, and the Real Presence of Christ in the Eucharist. Although these mysteries are beyond reason, they are not contrary to reason. Catholics believe them because God has revealed them and because God can neither deceive nor be deceived. Throughout history, theologians have studied these mysteries and gained deeper insights into them, but their full depth can never be exhausted. Mysteries invite believers not merely to understand God intellectually but to trust Him, worship Him, and enter more deeply into His divine life.',
+
+  catechism: {
+    paragraphs: ['50', '157', '237'],
+    text: 'By natural reason man can know God with certainty on the basis of his works. But there is another order of knowledge which man cannot possibly arrive at by his own powers: the order of divine Revelation. Faith is certain because it is founded on the very word of God.'
+  },
+
+  scripture: {
+    reference: 'Isaiah 55:8-9',
+    text: 'For my thoughts are not your thoughts, neither are your ways my ways, says the Lord. For as the heavens are higher than the earth, so are my ways higher than your ways and my thoughts than your thoughts.'
+  },
+},
+{
+  id: '29',
+
+  slug: 'is-there-any-likeness-to-the-blessed-trinity-in-your-soul',
+
+  category: 'God',
+
+  question: 'Is there any likeness to the Blessed Trinity in your soul?',
+
+  answer:
+    'There is this likeness to the Blessed Trinity in my soul: that as in one God there are three Persons, so in my one soul there are three powers.',
+
+  explanation:
+    'The human soul is created in the image and likeness of God, and because God is a Trinity, traces of this divine image can be found within us. The Church has long taught that the soul reflects the Trinity in a limited way through its faculties of memory, understanding, and will. This comparison does not mean that the soul contains three persons or that human beings are miniature trinities. Rather, it illustrates how unity and distinction can exist together. Just as the three divine Persons are distinct yet remain one God, the different powers of the soul work together within one human person. This likeness helps us appreciate both the dignity of the human person and the fact that we are created for relationship with God. Ultimately, the image of the Trinity within us points beyond ourselves to the God whose likeness we bear.',
+
+  catechism: {
+    paragraphs: ['1701', '1704', '1878'],
+    text: 'Christ reveals that God is love and that man is called to love. The divine image is present in every man. Created in the image of the one God and equally endowed with rational souls, all men have the same nature and the same origin.'
+  },
+
+  scripture: {
+    reference: 'Genesis 1:26',
+    text: 'Then God said, "Let us make man in our image, after our likeness."'
+  },
+},
+{
+  id: '30',
+
+  slug: 'which-are-the-three-powers-of-your-soul',
+
+  category: 'God',
+
+  question: 'Which are the three powers of your soul?',
+
+  answer:
+    'The three powers of my soul are my memory, my understanding, and my will.',
+
+  explanation:
+    'God has given every human soul spiritual faculties that allow us to know Him and respond to Him freely. Memory allows us to retain knowledge and reflect on our experiences. Understanding enables us to reason, learn truth, and contemplate God. Will gives us the ability to make choices and direct our actions toward what we believe to be good. These powers work together constantly in daily life. We remember, we understand, and then we choose. Because of original sin, these faculties can be weakened or misused, but they remain gifts from God that can be strengthened through grace. By using our memory to recall Gods blessings, our understanding to learn His truth, and our will to choose what is right, we grow in holiness and become more fully the people God created us to be.',
+
+  catechism: {
+    paragraphs: ['1704', '1730', '1731'],
+    text: 'The human person participates in the light and power of the divine Spirit. By reason he is capable of understanding the order of things established by the Creator. By free will he is capable of directing himself toward his true good. Freedom is the power to act or not to act, and so to perform deliberate actions on ones own responsibility.'
+  },
+
+  scripture: {
+    reference: 'Romans 12:2',
+    text: 'Do not be conformed to this world but be transformed by the renewal of your mind, that you may prove what is the will of God, what is good and acceptable and perfect.'
+  },
+},
+{
+  id: '31',
+
+  slug: 'what-is-the-second-article-of-the-creed',
+
+  category: 'Jesus Christ',
+
+  question: 'What is the second article of the Creed?',
+
+  answer:
+    'The second article of the Creed is, "and in Jesus Christ, his only Son, our Lord".',
+
+  explanation:
+    'The second article of the Apostles\' Creed begins the Church\'s profession of faith concerning Jesus Christ. While the first article focuses on God the Father and creation, the second article introduces the Son, through whom the work of redemption is accomplished. The name Jesus means "God saves", revealing His mission to save humanity from sin. Christ means "Anointed One" or "Messiah", indicating that He is the Saviour promised throughout the Old Testament. By calling Jesus the only Son of God, the Creed teaches that His relationship with the Father is unique and eternal. By calling Him Lord, Christians acknowledge His divine authority and worship Him as God. This article marks the beginning of the Church\'s teaching on the person and work of Jesus Christ, who stands at the very centre of the Catholic faith.',
+
+  catechism: {
+    paragraphs: ['430', '436', '454'],
+    text: 'Jesus means "God saves". The title "Christ" means "Anointed One", "Messiah". The title "Lord" indicates divine sovereignty. In the Greek translation of the Old Testament, "Lord" was the name most often used to translate the divine name revealed to Moses.'
+  },
+
+  scripture: {
+    reference: 'Acts 2:36',
+    text: 'Let all the house of Israel therefore know assuredly that God has made him both Lord and Christ, this Jesus whom you crucified.'
+  },
+},
+{
+  id: '32',
+
+  slug: 'who-is-jesus-christ',
+
+  category: 'Jesus Christ',
+
+  question: 'Who is Jesus Christ?',
+
+  answer:
+    'Jesus Christ is God the Son, made man for us.',
+
+  explanation:
+    'Jesus Christ is the eternal Son of God who became man for our salvation. This mystery is known as the Incarnation. Without ceasing to be God, the Son took on a true human nature and entered human history. He experienced human life in all things except sin. Through His teaching, miracles, suffering, death, and resurrection, He revealed the Father and accomplished the redemption of the world. Jesus is not half God and half man, nor is He a human person joined to a divine person. He is one divine Person with both a divine nature and a human nature. Because He is truly God and truly man, He is the perfect mediator between God and humanity. Everything Christians believe about salvation ultimately depends upon who Jesus is and what He has done for us.',
+
+  catechism: {
+    paragraphs: ['456', '464', '480'],
+    text: 'The Word became flesh to save us by reconciling us with God. Jesus Christ is true God and true man in the unity of his divine Person. He is the one mediator between God and men.'
+  },
+
+  scripture: {
+    reference: 'John 1:14',
+    text: 'And the Word became flesh and dwelt among us, full of grace and truth; we have beheld his glory, glory as of the only Son from the Father.'
+  },
+},
+{
+  id: '33',
+
+  slug: 'is-jesus-christ-truly-god',
+
+  category: 'Jesus Christ',
+
+  question: 'Is Jesus Christ truly God?',
+
+  answer:
+    'Jesus Christ is truly God.',
+
+  explanation:
+    'The Church teaches that Jesus Christ is fully and completely God. He is not merely a holy man, prophet, or exceptionally gifted teacher. From all eternity He exists as the Son of the Father and shares the same divine nature as the Father and the Holy Spirit. Throughout the Gospels, Jesus claims divine authority, forgives sins, accepts worship, and identifies Himself in ways that reveal His divinity. The apostles came to recognise that Jesus was more than the promised Messiah; He was God made visible among men. The divinity of Christ is essential to Christianity because only God can save humanity from sin and grant eternal life. If Jesus were not truly God, His death could not have brought about the redemption of the world. The Church therefore professes and worships Jesus as Lord, equal to the Father in glory and majesty.',
+
+  catechism: {
+    paragraphs: ['441', '454', '590'],
+    text: 'Jesus accepted Peter\'s profession of faith, which acknowledged him as the Messiah and Son of the living God. The title "Lord" indicates divine sovereignty. Jesus\' identity as Son of God lies at the heart of the Christian faith.'
+  },
+
+  scripture: {
+    reference: 'John 20:28',
+    text: 'Thomas answered him, "My Lord and my God!"'
+  },
+},
 ]
