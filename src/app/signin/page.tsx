@@ -66,7 +66,7 @@ export default function SigninPage() {
         </p>
       </div>
 
-      <div className="border-border bg-bg-card mx-auto mt-4 max-w-xl rounded-3xl border p-8 md:p-10">
+      <div className="mx-auto max-w-3xl">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="border-border rounded-2xl border p-6">
             <p className="text-text-secondary">
