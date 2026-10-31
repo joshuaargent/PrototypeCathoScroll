@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import { Pin } from 'lucide-react';
+
 import { Comment } from '../../lib/supabase/types';
 
 import { CommentForm } from './CommentForm';
@@ -11,6 +13,10 @@ interface CommentCardProps {
 
   currentUserId: string | null;
 
+  currentUsername?: string;
+
+  depth?: number;
+
   onReply: (parentId: number, content: string) => Promise<void>;
 
   onLike: (commentId: number) => Promise<void>;
@@ -18,6 +24,8 @@ interface CommentCardProps {
   onEdit: (commentId: number, content: string) => Promise<void>;
 
   onDelete: (commentId: number) => Promise<void>;
+
+  onPin?: (commentId: number) => Promise<void>;
 }
 
 function formatRelativeDate(dateString: string) {
@@ -57,10 +65,13 @@ function formatRelativeDate(dateString: string) {
 export function CommentCard({
   comment,
   currentUserId,
+  currentUsername,
+  depth = 0,
   onReply,
   onLike,
   onEdit,
   onDelete,
+  onPin,
 }: CommentCardProps) {
   const [showReply, setShowReply] = useState(false);
 
@@ -68,10 +79,24 @@ export function CommentCard({
 
   const isOwner = currentUserId === comment.user_id;
 
+  const canReply = depth < 2;
+
+  const canPin = currentUsername === 'joshua_argent' || currentUsername === 'admin';
+
+  const canShowPinButton = canPin && comment.parent_id === null;
+
   return (
     <div className="space-y-4">
       <article className="border-border rounded-2xl border p-6">
         <div className="mb-4">
+          {comment.is_pinned && (
+            <div className="mb-3">
+              <span className="bg-accent-light text-accent inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium">
+                <Pin className="h-3 w-3" />
+                Pinned
+              </span>
+            </div>
+          )}
           <div className="flex flex-wrap items-center gap-2">
             <p className="font-semibold">{comment.profile.display_name}</p>
 
@@ -125,7 +150,7 @@ export function CommentCard({
                 ♥ {comment.likes}
               </button>
 
-              {!isEditing && (
+              {!isEditing && canReply && (
                 <button
                   type="button"
                   onClick={() => setShowReply(!showReply)}
@@ -158,6 +183,15 @@ export function CommentCard({
                   </button>
                 </>
               )}
+              {!comment.is_deleted && canShowPinButton && (
+                <button
+                  type="button"
+                  onClick={() => onPin?.(comment.id)}
+                  className="text-text-secondary hover:text-text-primary"
+                >
+                  {comment.is_pinned ? 'Unpin' : 'Pin'}
+                </button>
+              )}
             </div>
 
             {showReply && !isEditing && (
@@ -184,10 +218,13 @@ export function CommentCard({
               key={reply.id}
               comment={reply}
               currentUserId={currentUserId}
+              currentUsername={currentUsername}
+              depth={depth + 1}
               onReply={onReply}
               onLike={onLike}
               onEdit={onEdit}
               onDelete={onDelete}
+              onPin={onPin}
             />
           ))}
         </div>
