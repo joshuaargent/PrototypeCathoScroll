@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation';
 import { TopicNotes } from '@/components/topic/TopicNotes';
 import { TopicActions } from '@/components/topic/TopicActions';
 
+import { CommentSection } from '@/components/comments/CommentSection';
+
 import { topics } from '@/data/topics';
 import { Badge } from '@/components/ui/Badge';
 
@@ -83,6 +85,8 @@ export default async function TopicPage({ params }: Props) {
       </section>
 
       <TopicNotes topicId={String(topic.id)} />
+
+      <CommentSection topicId={String(topic.id)} />
 
       {relatedTopics.length > 0 && (
         <section className="mb-16">
