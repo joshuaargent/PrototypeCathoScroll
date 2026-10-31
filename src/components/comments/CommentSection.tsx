@@ -1,8 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Comment } from '../../lib/supabase/types';
+import { Comment, Profile } from '../../lib/supabase/types';
 
 import { createClient } from '@/lib/supabase/client';
 
@@ -13,12 +13,89 @@ interface CommentSectionProps {
   topicId: string;
 }
 
+const fallbackProfile: Profile = {
+  id: '',
+  username: 'unknown',
+  display_name: 'Unknown User',
+  avatar_url: null,
+  bio: null,
+  created_at: '',
+  subscription_tier: 'free',
+};
+
+function countComments(comments: Comment[]): number {
+  return comments.reduce((total, comment) => total + 1 + countComments(comment.replies), 0);
+}
+
+function updateCommentTree(
+  comments: Comment[],
+  commentId: number,
+  updater: (comment: Comment) => Comment
+): Comment[] {
+  return comments.map((comment) => {
+    if (comment.id === commentId) {
+      return updater(comment);
+    }
+
+    return {
+      ...comment,
+      replies: updateCommentTree(comment.replies, commentId, updater),
+    };
+  });
+}
+
+function insertReplyIntoTree(comments: Comment[], parentId: number, reply: Comment): Comment[] {
+  return comments.map((comment) => {
+    if (comment.id === parentId) {
+      return {
+        ...comment,
+        replies: [reply, ...comment.replies],
+      };
+    }
+
+    return {
+      ...comment,
+      replies: insertReplyIntoTree(comment.replies, parentId, reply),
+    };
+  });
+}
+
+function replaceCommentId(comments: Comment[], tempId: number, realId: number): Comment[] {
+  return comments.map((comment) => {
+    const updated =
+      comment.id === tempId
+        ? {
+            ...comment,
+            id: realId,
+            optimistic: false,
+          }
+        : comment;
+
+    return {
+      ...updated,
+      replies: replaceCommentId(updated.replies, tempId, realId),
+    };
+  });
+}
+
+function cloneAndSortComments(comments: Comment[], sorter: (comments: Comment[]) => void) {
+  const cloned = structuredClone(comments);
+
+  sorter(cloned);
+
+  return cloned;
+}
+
 export function CommentSection({ topicId }: CommentSectionProps) {
   const [comments, setComments] = useState<Comment[]>([]);
 
   const [loading, setLoading] = useState(true);
 
   const [userId, setUserId] = useState<string | null>(null);
+
+  const [currentProfile, setCurrentProfile] = useState<Profile | null>(null);
+
+  const commentCount = useMemo(() => countComments(comments), [comments]);
 
   const sortComments = useCallback((comments: Comment[]) => {
     comments.sort((a, b) => {
@@ -45,42 +122,39 @@ export function CommentSection({ topicId }: CommentSectionProps) {
 
     setUserId(user?.id ?? null);
 
-    const [commentsResult, likesResult] = await Promise.all([
-      supabase
-        .from('comments')
-        .select(
-          `
-  *,
-  profiles (
-    id,
-    username,
-    display_name,
-    avatar_url,
-    bio,
-    created_at,
-    subscription_tier
-  )
-`
-        )
-        .eq('topic_id', topicId)
-        .order('created_at', {
-          ascending: false,
-        }),
-
-      supabase.from('comment_likes').select('comment_id,user_id'),
-    ]);
-
-    console.log(commentsResult.error);
+    const commentsResult = await supabase
+      .from('comments')
+      .select('*')
+      .eq('topic_id', topicId)
+      .order('created_at', {
+        ascending: false,
+      });
 
     const commentRows = commentsResult.data ?? [];
 
-    const likeRows = likesResult.data ?? [];
+    const userIds = [...new Set(commentRows.map((row) => row.user_id))];
+
+    const [likesResult, profilesResult] = await Promise.all([
+      supabase.from('comment_likes').select('comment_id,user_id'),
+
+      userIds.length
+        ? supabase.from('profiles').select('*').in('id', userIds)
+        : Promise.resolve({
+            data: [],
+          }),
+    ]);
+
+    const profiles = new Map((profilesResult.data ?? []).map((profile) => [profile.id, profile]));
+
+    if (user?.id) {
+      setCurrentProfile(profiles.get(user.id) ?? null);
+    }
 
     const likeCounts = new Map<number, number>();
 
     const likedByUser = new Set<number>();
 
-    likeRows.forEach((like) => {
+    (likesResult.data ?? []).forEach((like) => {
       likeCounts.set(like.comment_id, (likeCounts.get(like.comment_id) ?? 0) + 1);
 
       if (like.user_id === user?.id) {
@@ -91,8 +165,6 @@ export function CommentSection({ topicId }: CommentSectionProps) {
     const map = new Map<number, Comment>();
 
     const roots: Comment[] = [];
-
-    console.log(commentRows);
 
     commentRows.forEach((row) => {
       map.set(row.id, {
@@ -106,7 +178,10 @@ export function CommentSection({ topicId }: CommentSectionProps) {
         is_deleted: row.is_deleted,
         is_pinned: row.is_pinned,
 
-        profile: row.profiles,
+        profile: profiles.get(row.user_id) ?? {
+          ...fallbackProfile,
+          id: row.user_id,
+        },
 
         likes: likeCounts.get(row.id) ?? 0,
 
@@ -123,9 +198,7 @@ export function CommentSection({ topicId }: CommentSectionProps) {
         return;
       }
 
-      const parent = map.get(comment.parent_id);
-
-      parent?.replies.push(comment);
+      map.get(comment.parent_id)?.replies.push(comment);
     });
 
     sortComments(roots);
@@ -136,46 +209,143 @@ export function CommentSection({ topicId }: CommentSectionProps) {
   }, [topicId, sortComments]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadComments();
   }, [loadComments]);
 
   async function createComment(content: string) {
-    if (!userId) {
+    if (!userId || !currentProfile) {
       return;
     }
 
-    const supabase = createClient();
+    const tempId = -Date.now();
 
-    const { error } = await supabase.from('comments').insert({
-      topic_id: topicId,
+    const tempComment: Comment = {
+      id: tempId,
       user_id: userId,
+      topic_id: topicId,
       parent_id: null,
       content,
-    });
+      created_at: new Date().toISOString(),
+      edited_at: null,
+      is_deleted: false,
+      is_pinned: false,
+      profile: currentProfile,
+      likes: 0,
+      likedByUser: false,
+      replies: [],
+      optimistic: true,
+    };
 
-    if (!error) {
+    setComments((prev) => cloneAndSortComments([tempComment, ...prev], sortComments));
+
+    const supabase = createClient();
+
+    const { data, error } = await supabase
+      .from('comments')
+      .insert({
+        topic_id: topicId,
+        user_id: userId,
+        content,
+        parent_id: null,
+      })
+      .select()
+      .single();
+
+    if (error || !data) {
       await loadComments();
+
+      return;
     }
+
+    setComments((prev) => replaceCommentId(prev, tempId, data.id));
+  }
+
+  async function createReply(parentId: number, content: string) {
+    if (!userId || !currentProfile) {
+      return;
+    }
+
+    const tempId = -Date.now();
+
+    const tempReply: Comment = {
+      id: tempId,
+      user_id: userId,
+      topic_id: topicId,
+      parent_id: parentId,
+      content,
+      created_at: new Date().toISOString(),
+      edited_at: null,
+      is_deleted: false,
+      is_pinned: false,
+      profile: currentProfile,
+      likes: 0,
+      likedByUser: false,
+      replies: [],
+      optimistic: true,
+    };
+
+    setComments((prev) => insertReplyIntoTree(prev, parentId, tempReply));
+
+    const supabase = createClient();
+
+    const { data, error } = await supabase
+      .from('comments')
+      .insert({
+        topic_id: topicId,
+        user_id: userId,
+        parent_id: parentId,
+        content,
+      })
+      .select()
+      .single();
+
+    if (error || !data) {
+      await loadComments();
+
+      return;
+    }
+
+    setComments((prev) => replaceCommentId(prev, tempId, data.id));
   }
 
   async function editComment(commentId: number, content: string) {
+    const editedAt = new Date().toISOString();
+
+    setComments((prev) =>
+      updateCommentTree(prev, commentId, (comment) => ({
+        ...comment,
+        content,
+        edited_at: editedAt,
+      }))
+    );
+
     const supabase = createClient();
 
     const { error } = await supabase
       .from('comments')
       .update({
         content,
-        edited_at: new Date().toISOString(),
+        edited_at: editedAt,
       })
       .eq('id', commentId);
 
-    if (!error) {
+    if (error) {
       await loadComments();
     }
   }
 
   async function deleteComment(commentId: number) {
+    if (!window.confirm('Delete this comment?')) {
+      return;
+    }
+
+    setComments((prev) =>
+      updateCommentTree(prev, commentId, (comment) => ({
+        ...comment,
+        is_deleted: true,
+      }))
+    );
+
     const supabase = createClient();
 
     const { error } = await supabase
@@ -185,26 +355,7 @@ export function CommentSection({ topicId }: CommentSectionProps) {
       })
       .eq('id', commentId);
 
-    if (!error) {
-      await loadComments();
-    }
-  }
-
-  async function createReply(parentId: number, content: string) {
-    if (!userId) {
-      return;
-    }
-
-    const supabase = createClient();
-
-    const { error } = await supabase.from('comments').insert({
-      topic_id: topicId,
-      user_id: userId,
-      parent_id: parentId,
-      content,
-    });
-
-    if (!error) {
+    if (error) {
       await loadComments();
     }
   }
@@ -230,28 +381,45 @@ export function CommentSection({ topicId }: CommentSectionProps) {
       return;
     }
 
-    const supabase = createClient();
-
     const comment = findComment(comments, commentId);
 
     if (!comment) {
       return;
     }
 
-    if (comment.likedByUser) {
-      await supabase
+    const wasLiked = comment.likedByUser;
+
+    setComments((prev) =>
+      cloneAndSortComments(
+        updateCommentTree(prev, commentId, (comment) => ({
+          ...comment,
+          likedByUser: !wasLiked,
+          likes: wasLiked ? Math.max(0, comment.likes - 1) : comment.likes + 1,
+        })),
+        sortComments
+      )
+    );
+
+    const supabase = createClient();
+
+    let error = null;
+
+    if (wasLiked) {
+      ({ error } = await supabase
         .from('comment_likes')
         .delete()
         .eq('user_id', userId)
-        .eq('comment_id', commentId);
+        .eq('comment_id', commentId));
     } else {
-      await supabase.from('comment_likes').insert({
+      ({ error } = await supabase.from('comment_likes').insert({
         user_id: userId,
         comment_id: commentId,
-      });
+      }));
     }
 
-    await loadComments();
+    if (error) {
+      await loadComments();
+    }
   }
 
   if (loading) {
@@ -266,15 +434,31 @@ export function CommentSection({ topicId }: CommentSectionProps) {
 
   return (
     <section id="comments" className="mb-16">
-      <h2 className="mb-6 text-3xl font-bold">Comments ({comments.length})</h2>
+      <h2 className="mb-6 text-3xl font-bold">Comments ({commentCount})</h2>
 
-      <CommentForm onSubmit={createComment} />
+      {userId ? (
+        <>
+          <CommentForm onSubmit={createComment} />
 
-      <div className="h-6" />
+          <div className="h-6" />
+        </>
+      ) : (
+        <>
+          <article className="border-border rounded-2xl border p-6">
+            <p className="text-text-secondary">Sign in to join the discussion.</p>
+          </article>
+
+          <div className="h-6" />
+        </>
+      )}
 
       {comments.length === 0 ? (
         <article className="border-border rounded-2xl border p-6">
-          <p className="text-text-secondary">Be the first to comment.</p>
+          <p className="font-medium">No comments yet.</p>
+
+          <p className="text-text-secondary mt-2">
+            Be the first to share your thoughts on this topic.
+          </p>
         </article>
       ) : (
         <div className="space-y-6">

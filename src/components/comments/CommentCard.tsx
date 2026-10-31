@@ -66,17 +66,23 @@ export function CommentCard({
 
   const [isEditing, setIsEditing] = useState(false);
 
+  const isOwner = currentUserId === comment.user_id;
+
   return (
     <div className="space-y-4">
       <article className="border-border rounded-2xl border p-6">
         <div className="mb-4">
-          <p className="font-semibold">{comment.profile.display_name}</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="font-semibold">{comment.profile.display_name}</p>
+
+            {isOwner && (
+              <span className="bg-accent-light text-accent rounded-full px-2 py-0.5 text-xs font-medium">
+                You
+              </span>
+            )}
+          </div>
 
           <div className="text-text-muted mt-1 flex flex-wrap items-center gap-2 text-sm">
-            <span>@{comment.profile.username}</span>
-
-            <span>•</span>
-
             <span>{formatRelativeDate(comment.created_at)}</span>
 
             {comment.edited_at && (
@@ -90,7 +96,7 @@ export function CommentCard({
         </div>
 
         {comment.is_deleted ? (
-          <p className="text-text-muted italic">Comment deleted.</p>
+          <p className="text-text-muted italic">This comment has been deleted.</p>
         ) : (
           <>
             {isEditing ? (
@@ -114,24 +120,30 @@ export function CommentCard({
                 onClick={() => onLike(comment.id)}
                 className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
                   comment.likedByUser ? 'bg-accent text-white' : 'bg-accent-light text-accent'
-                } `}
+                }`}
               >
                 ♥ {comment.likes}
               </button>
 
-              <button
-                type="button"
-                onClick={() => setShowReply(!showReply)}
-                className="text-text-secondary hover:text-text-primary"
-              >
-                Reply
-              </button>
+              {!isEditing && (
+                <button
+                  type="button"
+                  onClick={() => setShowReply(!showReply)}
+                  className="text-text-secondary hover:text-text-primary"
+                >
+                  Reply
+                </button>
+              )}
 
-              {currentUserId === comment.user_id && (
+              {isOwner && (
                 <>
                   <button
                     type="button"
-                    onClick={() => setIsEditing(!isEditing)}
+                    onClick={() => {
+                      setShowReply(false);
+
+                      setIsEditing(!isEditing);
+                    }}
                     className="text-text-secondary hover:text-text-primary"
                   >
                     Edit
@@ -148,7 +160,7 @@ export function CommentCard({
               )}
             </div>
 
-            {showReply && (
+            {showReply && !isEditing && (
               <div className="mt-6">
                 <CommentForm
                   submitLabel="Reply"
