@@ -12,21 +12,23 @@ interface TopicFeedProps {
   topics: Topic[];
 }
 
-export function TopicFeed({
-  topics,
-}: TopicFeedProps) {
-  const [feedTopics, setFeedTopics] =
-    useState<Topic[]>([]);
+export function TopicFeed({ topics }: TopicFeedProps) {
+  const [feedTopics, setFeedTopics] = useState<Topic[]>([]);
 
-  const [topicIndex, setTopicIndex] =
-    useState(0);
+  const [topicIndex, setTopicIndex] = useState(0);
 
   // ----------------------------------
   // Initial Feed
   // ----------------------------------
 
   useEffect(() => {
-    setFeedTopics(shuffle(topics));
+    const shuffled = shuffle(topics);
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setFeedTopics(shuffled);
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setTopicIndex(Math.floor(shuffled.length / 2));
   }, [topics]);
 
   // ----------------------------------
@@ -34,30 +36,11 @@ export function TopicFeed({
   // ----------------------------------
 
   const nextTopic = () => {
-    setTopicIndex(prev => {
-      const next = prev + 1;
-
-      // Loop feed
-
-      if (
-        next >= feedTopics.length
-      ) {
-        const reshuffled =
-          shuffle(topics);
-
-        setFeedTopics(reshuffled);
-
-        return 0;
-      }
-
-      return next;
-    });
+    setTopicIndex((prev) => (prev + 1) % feedTopics.length);
   };
 
   const previousTopic = () => {
-    setTopicIndex(prev =>
-      Math.max(0, prev - 1)
-    );
+    setTopicIndex((prev) => (prev - 1 + feedTopics.length) % feedTopics.length);
   };
 
   // ----------------------------------
@@ -69,13 +52,13 @@ export function TopicFeed({
   }
 
   return (
-  <div className="h-full">
-    <TopicViewer
-      topics={feedTopics}
-      topicIndex={topicIndex}
-      onNextTopic={nextTopic}
-      onPreviousTopic={previousTopic}
-    />
-  </div>
-);
+    <div className="h-full">
+      <TopicViewer
+        topics={feedTopics}
+        topicIndex={topicIndex}
+        onNextTopic={nextTopic}
+        onPreviousTopic={previousTopic}
+      />
+    </div>
+  );
 }
