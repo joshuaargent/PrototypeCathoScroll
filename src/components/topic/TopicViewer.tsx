@@ -55,6 +55,8 @@ export function TopicViewer({
 
   const currentTopic = topics[topicIndex];
 
+  const currentTopicId = String(currentTopic.id);
+
   const previousTopic = topics[(topicIndex - 1 + topics.length) % topics.length];
 
   const nextTopic = topics[(topicIndex + 1) % topics.length];
@@ -63,27 +65,19 @@ export function TopicViewer({
 
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const [bookmarks, setBookmarks] = useState<Set<string>>(new Set());
+  const [bookmarks, setBookmarks] = useState(() => new Set<string>());
+
+  const [completedTopics, setCompletedTopics] = useState(() => new Set<string>());
 
   const [userId, setUserId] = useState<string | null>(null);
 
   const currentSlide = slides[slideIndex];
 
-  const [visibleTopicId, setVisibleTopicId] = useState(String(currentTopic.id));
-
-  const isBookmarked = bookmarks.has(visibleTopicId);
+  const isBookmarked = bookmarks.has(currentTopicId);
 
   const bookmarksLoaded = useRef(false);
 
   const bookmarkVisible = !isAnimating;
-
-  useEffect(() => {
-    if (isAnimating) {
-      return;
-    }
-
-    setVisibleTopicId(String(currentTopic.id));
-  }, [currentTopic.id, isAnimating]);
 
   useEffect(() => {
     if (bookmarksLoaded.current) {
@@ -101,12 +95,24 @@ export function TopicViewer({
 
       if (!user) {
         setBookmarks(new Set());
+        setCompletedTopics(new Set());
         return;
       }
 
-      const { data } = await supabase.from('bookmarks').select('topic_id').eq('user_id', user.id);
+      const [bookmarksResult, progressResult] = await Promise.all([
+        supabase.from('bookmarks').select('topic_id').eq('user_id', user.id),
 
-      setBookmarks(new Set(data?.map((bookmark) => String(bookmark.topic_id)) ?? []));
+        supabase.from('progress').select('topic_id').eq('user_id', user.id),
+      ]);
+
+      setBookmarks(
+        new Set(bookmarksResult.data?.map((bookmark) => String(bookmark.topic_id)) ?? [])
+      );
+
+      setCompletedTopics(
+        new Set(progressResult.data?.map((progress) => String(progress.topic_id)) ?? [])
+      );
+
       setUserId(user.id);
     }
 
@@ -116,6 +122,200 @@ export function TopicViewer({
   const previousSlide = slideIndex > 0 ? slides[slideIndex - 1] : null;
 
   const nextSlide = slideIndex < slides.length - 1 ? slides[slideIndex + 1] : null;
+
+  const shareTopic = async () => {
+    try {
+      const url =
+        typeof window !== 'undefined' ? `${window.location.origin}/topic/${currentTopic.slug}` : '';
+
+      if (navigator.share) {
+        await navigator.share({
+          title: currentTopic.question,
+          url,
+        });
+
+        return;
+      }
+
+      await navigator.clipboard.writeText(url);
+    } catch {}
+  };
+
+  const toggleBookmark = async () => {
+    const supabase = createClient();
+
+    if (!userId) {
+      router.push('/signin');
+      return;
+    }
+
+    const currentlyBookmarked = bookmarks.has(currentTopicId);
+
+    if (currentlyBookmarked) {
+      setBookmarks((prev) => {
+        const next = new Set(prev);
+
+        next.delete(currentTopicId);
+
+        return next;
+      });
+
+      const { error } = await supabase
+        .from('bookmarks')
+        .delete()
+        .eq('user_id', userId)
+        .eq('topic_id', currentTopicId);
+
+      if (error) {
+        setBookmarks((prev) => {
+          const next = new Set(prev);
+
+          next.add(currentTopicId);
+
+          return next;
+        });
+      }
+
+      return;
+    }
+
+    setBookmarks((prev) => {
+      const next = new Set(prev);
+
+      next.add(currentTopicId);
+
+      return next;
+    });
+
+    const { error } = await supabase.from('bookmarks').insert({
+      user_id: userId,
+      topic_id: currentTopicId,
+    });
+
+    if (error) {
+      setBookmarks((prev) => {
+        const next = new Set(prev);
+
+        next.delete(currentTopicId);
+
+        return next;
+      });
+    }
+  };
+
+  const markCompleted = async (topicId: string) => {
+    if (!userId) {
+      return;
+    }
+
+    if (completedTopics.has(topicId)) {
+      return;
+    }
+
+    setCompletedTopics((prev) => {
+      const next = new Set(prev);
+
+      next.add(topicId);
+
+      return next;
+    });
+
+    const supabase = createClient();
+
+    const { error } = await supabase.from('progress').upsert(
+      {
+        user_id: userId,
+        topic_id: topicId,
+      },
+      {
+        onConflict: 'user_id,topic_id',
+      }
+    );
+
+    if (error) {
+      setCompletedTopics((prev) => {
+        const next = new Set(prev);
+
+        next.delete(topicId);
+
+        return next;
+      });
+    }
+  };
+
+  const springHome = () => {
+    animate(x, 0, {
+      type: 'spring',
+      stiffness: 1800,
+      damping: 120,
+    });
+
+    animate(y, 0, {
+      type: 'spring',
+      stiffness: 1800,
+      damping: 120,
+    });
+  };
+
+  const moveSlide = async (direction: 'next' | 'previous') => {
+    if (isAnimating) return;
+
+    setIsAnimating(true);
+
+    try {
+      const width = containerRef.current?.clientWidth ?? window.innerWidth;
+
+      await animate(x, direction === 'next' ? -width : width, {
+        duration: 0.2,
+        ease: 'easeOut',
+      });
+
+      let nextIndex = slideIndex;
+
+      flushSync(() => {
+        nextIndex = direction === 'next' ? slideIndex + 1 : slideIndex - 1;
+
+        setSlideIndex(nextIndex);
+      });
+
+      if (slides[nextIndex]?.type === 'scripture') {
+        void markCompleted(currentTopicId);
+      }
+
+      x.jump(0);
+    } finally {
+      setIsAnimating(false);
+    }
+  };
+
+  const moveTopic = async (direction: 'next' | 'previous') => {
+    if (isAnimating) return;
+
+    setIsAnimating(true);
+
+    try {
+      const height = containerRef.current?.clientHeight ?? window.innerHeight;
+
+      await animate(y, direction === 'next' ? -height : height, {
+        duration: 0.2,
+        ease: 'easeOut',
+      });
+
+      flushSync(() => {
+        setSlideIndex(0);
+
+        if (direction === 'next') {
+          onNextTopic?.();
+        } else {
+          onPreviousTopic?.();
+        }
+      });
+
+      y.jump(0);
+    } finally {
+      setIsAnimating(false);
+    }
+  };
 
   useEffect(() => {
     const handleKeyDown = async (event: globalThis.KeyboardEvent) => {
@@ -179,153 +379,8 @@ export function TopicViewer({
     window.addEventListener('keydown', handleKeyDown);
 
     return () => window.removeEventListener('keydown', handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [previousSlide, nextSlide, previousTopic, nextTopic, isAnimating]);
-
-  const shareTopic = async () => {
-    try {
-      const url =
-        typeof window !== 'undefined' ? `${window.location.origin}/topic/${currentTopic.slug}` : '';
-
-      if (navigator.share) {
-        await navigator.share({
-          title: currentTopic.question,
-          url,
-        });
-
-        return;
-      }
-
-      await navigator.clipboard.writeText(url);
-    } catch {}
-  };
-
-  const toggleBookmark = async () => {
-    const supabase = createClient();
-
-    if (!userId) {
-      router.push('/signin');
-      return;
-    }
-
-    const currentlyBookmarked = bookmarks.has(String(currentTopic.id));
-
-    if (currentlyBookmarked) {
-      setBookmarks((prev) => {
-        const next = new Set(prev);
-
-        next.delete(String(currentTopic.id));
-
-        return next;
-      });
-
-      const { error } = await supabase
-        .from('bookmarks')
-        .delete()
-        .eq('user_id', userId)
-        .eq('topic_id', String(currentTopic.id));
-
-      if (error) {
-        setBookmarks((prev) => {
-          const next = new Set(prev);
-
-          next.add(String(currentTopic.id));
-
-          return next;
-        });
-      }
-
-      return;
-    }
-
-    setBookmarks((prev) => {
-      const next = new Set(prev);
-
-      next.add(String(currentTopic.id));
-
-      return next;
-    });
-
-    const { error } = await supabase.from('bookmarks').insert({
-      user_id: userId,
-      topic_id: String(currentTopic.id),
-    });
-
-    if (error) {
-      setBookmarks((prev) => {
-        const next = new Set(prev);
-
-        next.delete(String(currentTopic.id));
-
-        return next;
-      });
-    }
-  };
-
-  const springHome = () => {
-    animate(x, 0, {
-      type: 'spring',
-      stiffness: 1800,
-      damping: 120,
-    });
-
-    animate(y, 0, {
-      type: 'spring',
-      stiffness: 1800,
-      damping: 120,
-    });
-  };
-
-  const moveSlide = async (direction: 'next' | 'previous') => {
-    if (isAnimating) return;
-
-    setIsAnimating(true);
-
-    try {
-      const width = containerRef.current?.clientWidth ?? window.innerWidth;
-
-      await animate(x, direction === 'next' ? -width : width, {
-        duration: 0.2,
-        ease: 'easeOut',
-      });
-
-      flushSync(() => {
-        setSlideIndex((prev) => (direction === 'next' ? prev + 1 : prev - 1));
-      });
-
-      x.jump(0);
-    } finally {
-      setIsAnimating(false);
-    }
-  };
-
-  const moveTopic = async (direction: 'next' | 'previous') => {
-    if (isAnimating) return;
-
-    setIsAnimating(true);
-
-    try {
-      const height = containerRef.current?.clientHeight ?? window.innerHeight;
-
-      await animate(y, direction === 'next' ? -height : height, {
-        duration: 0.2,
-        ease: 'easeOut',
-      });
-
-      flushSync(() => {
-        setSlideIndex(0);
-
-        if (direction === 'next') {
-          onNextTopic?.();
-        } else {
-          onPreviousTopic?.();
-        }
-      });
-
-      y.jump(0);
-    } finally {
-      setIsAnimating(false);
-    }
-  };
 
   const handlePointerDown = (event: React.PointerEvent) => {
     setIsDragging(true);
