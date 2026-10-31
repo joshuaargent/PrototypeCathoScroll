@@ -346,7 +346,7 @@ export default async function ProfilePage({ params }: Props) {
             <p className="text-text-secondary">No comments yet.</p>
           </article>
         ) : (
-          <div className="space-y-4">
+          <div className="grid gap-6">
             {recentComments.map((comment) => (
               <Link key={comment.id} href={`/topic/${comment.slug}#comments`}>
                 <article className="border-border hover:bg-bg-secondary rounded-2xl border p-6 transition-colors">

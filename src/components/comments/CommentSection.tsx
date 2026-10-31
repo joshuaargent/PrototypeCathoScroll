@@ -227,7 +227,7 @@ export function CommentSection({ topicId }: CommentSectionProps) {
   }, [topicId, sortComments]);
 
   useEffect(() => {
-    //
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadComments();
   }, [loadComments]);
 
@@ -516,19 +516,17 @@ export function CommentSection({ topicId }: CommentSectionProps) {
         <div className="space-y-6">
           {comments.map((comment) => (
             <CommentCard
-  key={comment.id}
-  comment={comment}
-  currentUserId={userId}
-  currentUsername={currentUsername}
-  hasPinnedComment={
-    hasPinnedComment
-  }
-  onReply={createReply}
-  onLike={toggleLike}
-  onEdit={editComment}
-  onDelete={deleteComment}
-  onPin={togglePin}
-/>
+              key={comment.id}
+              comment={comment}
+              currentUserId={userId}
+              currentUsername={currentUsername}
+              hasPinnedComment={hasPinnedComment}
+              onReply={createReply}
+              onLike={toggleLike}
+              onEdit={editComment}
+              onDelete={deleteComment}
+              onPin={togglePin}
+            />
           ))}
         </div>
       )}
