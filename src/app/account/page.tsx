@@ -6,6 +6,8 @@ import Link from 'next/link';
 
 import { useRouter } from 'next/navigation';
 
+import { Skeleton } from '@/components/ui/Skeleton';
+
 import { Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/Button';
@@ -235,9 +237,47 @@ export default function AccountPage() {
 
   if (loading) {
     return (
-      <main className="container py-16">
-        <div className="flex justify-center">
-          <Loader2 className="h-8 w-8 animate-spin" />
+      <main className="container py-12">
+        <div className="mt-8 mb-10">
+          <Skeleton className="h-16 w-64" />
+
+          <Skeleton className="mt-4 h-6 w-96" />
+        </div>
+
+        <div className="space-y-10">
+          <div className="flex items-center justify-between">
+            <div>
+              <Skeleton className="h-8 w-48" />
+
+              <Skeleton className="mt-3 h-5 w-72" />
+            </div>
+
+            <Skeleton className="h-9 w-40" />
+          </div>
+
+          <div className="space-y-6">
+            <Skeleton className="h-12 w-full" />
+
+            <Skeleton className="h-12 w-full" />
+
+            <Skeleton className="h-40 w-full" />
+          </div>
+
+          <div className="space-y-6">
+            <Skeleton className="h-8 w-56" />
+
+            <Skeleton className="h-12 w-full" />
+
+            <Skeleton className="h-12 w-full" />
+          </div>
+
+          <Skeleton className="h-24 w-full" />
+
+          <div className="flex gap-4">
+            <Skeleton className="h-12 w-40" />
+
+            <Skeleton className="h-12 w-32" />
+          </div>
         </div>
       </main>
     );
