@@ -13,6 +13,78 @@ interface Props {
   }>;
 }
 
+function calculateCurrentStreak(dates: string[]) {
+  if (!dates.length) {
+    return 0;
+  }
+
+  const uniqueDays = new Set(dates.map((date) => new Date(date).toISOString().split('T')[0]));
+
+  const today = new Date();
+
+  today.setHours(0, 0, 0, 0);
+
+  const newest = new Date(dates[0]);
+
+  newest.setHours(0, 0, 0, 0);
+
+  const gap = Math.floor((today.getTime() - newest.getTime()) / (1000 * 60 * 60 * 24));
+
+  if (gap > 1) {
+    return 0;
+  }
+
+  let streak = 0;
+
+  const cursor = new Date(newest);
+
+  while (true) {
+    const key = cursor.toISOString().split('T')[0];
+
+    if (!uniqueDays.has(key)) {
+      break;
+    }
+
+    streak++;
+
+    cursor.setDate(cursor.getDate() - 1);
+  }
+
+  return streak;
+}
+
+function calculateLongestStreak(dates: string[]) {
+  if (!dates.length) {
+    return 0;
+  }
+
+  const uniqueDays = [
+    ...new Set(dates.map((date) => new Date(date).toISOString().split('T')[0])),
+  ].sort();
+
+  let longest = 1;
+
+  let current = 1;
+
+  for (let i = 1; i < uniqueDays.length; i++) {
+    const previous = new Date(uniqueDays[i - 1]);
+
+    const next = new Date(uniqueDays[i]);
+
+    const diff = Math.floor((next.getTime() - previous.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (diff === 1) {
+      current++;
+
+      longest = Math.max(longest, current);
+    } else {
+      current = 1;
+    }
+  }
+
+  return longest;
+}
+
 function formatCompletedDate(dateString: string) {
   const completedDate = new Date(dateString);
 
@@ -64,43 +136,52 @@ export default async function ProfilePage({ params }: Props) {
     notFound();
   }
 
-  const [progressResult, bookmarksResult, notesResult, recentProgressResult] = await Promise.all([
-    supabase
-      .from('progress')
-      .select('topic_id', {
-        count: 'exact',
-      })
-      .eq('user_id', profile.id),
+  const [progressResult, bookmarksResult, notesResult, recentProgressResult, streakResult] =
+    await Promise.all([
+      supabase
+        .from('progress')
+        .select('topic_id', {
+          count: 'exact',
+        })
+        .eq('user_id', profile.id),
 
-    supabase
-      .from('bookmarks')
-      .select('topic_id', {
-        count: 'exact',
-      })
-      .eq('user_id', profile.id),
+      supabase
+        .from('bookmarks')
+        .select('topic_id', {
+          count: 'exact',
+        })
+        .eq('user_id', profile.id),
 
-    supabase
-      .from('notes')
-      .select('id', {
-        count: 'exact',
-      })
-      .eq('user_id', profile.id),
+      supabase
+        .from('notes')
+        .select('id', {
+          count: 'exact',
+        })
+        .eq('user_id', profile.id),
 
-    supabase
-      .from('progress')
-      .select('topic_id, completed_at')
-      .eq('user_id', profile.id)
-      .order('completed_at', {
-        ascending: false,
-      })
-      .limit(6),
-  ]);
+      supabase
+        .from('progress')
+        .select('topic_id, completed_at')
+        .eq('user_id', profile.id)
+        .order('completed_at', {
+          ascending: false,
+        })
+        .limit(6),
+
+      supabase.from('progress').select('completed_at').eq('user_id', profile.id),
+    ]);
 
   const completedCount = progressResult.count ?? 0;
 
   const bookmarkCount = bookmarksResult.count ?? 0;
 
   const notesCount = notesResult.count ?? 0;
+
+  const streakDates = (streakResult.data ?? []).map((row) => row.completed_at);
+
+  const currentStreak = calculateCurrentStreak(streakDates);
+
+  const longestStreak = calculateLongestStreak(streakDates);
 
   const progressPercentage =
     topics.length > 0 ? ((completedCount / topics.length) * 100).toFixed(1) : '0';
@@ -165,7 +246,7 @@ export default async function ProfilePage({ params }: Props) {
         </article>
       </section>
 
-      <section className="mb-16 grid gap-6 md:grid-cols-3">
+      <section className="3 mb-16 grid gap-6 md:grid-cols-2 xl:grid-cols-5">
         <article className="border-border h-full rounded-2xl border p-6">
           <Badge variant="accent" size="sm">
             Completed
@@ -188,6 +269,21 @@ export default async function ProfilePage({ params }: Props) {
           </Badge>
 
           <p className="mt-4 text-5xl font-extrabold">{notesCount}</p>
+        </article>
+        <article className="border-border h-full rounded-2xl border p-6">
+          <Badge variant="accent" size="sm">
+            Streak
+          </Badge>
+
+          <p className="mt-4 text-5xl font-extrabold">{currentStreak}</p>
+        </article>
+
+        <article className="border-border h-full rounded-2xl border p-6">
+          <Badge variant="accent" size="sm">
+            Best Streak
+          </Badge>
+
+          <p className="mt-4 text-5xl font-extrabold">{longestStreak}</p>
         </article>
       </section>
 
