@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { createClient } from '@/lib/supabase/server';
@@ -10,6 +11,42 @@ interface Props {
   params: Promise<{
     username: string;
   }>;
+}
+
+function formatCompletedDate(dateString: string) {
+  const completedDate = new Date(dateString);
+
+  const today = new Date();
+
+  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  const startOfCompleted = new Date(
+    completedDate.getFullYear(),
+    completedDate.getMonth(),
+    completedDate.getDate()
+  );
+
+  const diffDays = Math.floor(
+    (startOfToday.getTime() - startOfCompleted.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  if (diffDays === 0) {
+    return 'Completed today';
+  }
+
+  if (diffDays === 1) {
+    return 'Completed yesterday';
+  }
+
+  if (diffDays < 7) {
+    return `Completed ${diffDays} days ago`;
+  }
+
+  return `Completed ${completedDate.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  })}`;
 }
 
 export default async function ProfilePage({ params }: Props) {
@@ -90,7 +127,11 @@ export default async function ProfilePage({ params }: Props) {
 
         <p className="text-text-secondary mt-4 text-lg">@{profile.username}</p>
 
-        {profile.bio && <p className="text-text-secondary mt-6 max-w-3xl text-lg">{profile.bio}</p>}
+        <p className="text-text-muted mt-4">
+          {completedCount} Completed • {bookmarkCount} Bookmarks • {notesCount} Notes
+        </p>
+
+        <p className="text-text-secondary mt-6 max-w-3xl text-lg">{profile.bio || 'No bio yet.'}</p>
 
         <div className="mt-6">
           <Badge variant="accent" size="lg">
@@ -105,11 +146,9 @@ export default async function ProfilePage({ params }: Props) {
         <article className="border-border rounded-2xl border p-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h3 className="text-2xl font-bold">
-                {completedCount} of {topics.length} Topics
-              </h3>
+              <h3 className="text-2xl font-bold">{completedCount} Topics Completed</h3>
 
-              <p className="text-text-secondary mt-2">Topics completed</p>
+              <p className="text-text-secondary mt-2">{progressPercentage}% of CathoScroll</p>
             </div>
 
             <div className="text-4xl font-extrabold">{progressPercentage}%</div>
@@ -162,15 +201,19 @@ export default async function ProfilePage({ params }: Props) {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {recentTopics.map((topic) => (
-              <article key={topic.slug} className="border-border h-full rounded-2xl border p-6">
-                <Badge variant="accent" size="sm">
-                  {topic.category}
-                </Badge>
+              <Link key={topic.slug} href={`/topic/${topic.slug}`}>
+                <article className="border-border hover:bg-bg-secondary h-full rounded-2xl border p-6 transition-colors">
+                  <Badge variant="accent" size="sm">
+                    {topic.category}
+                  </Badge>
 
-                <h3 className="mt-4 text-2xl font-bold">{topic.question}</h3>
+                  <h3 className="mt-4 text-2xl font-bold">{topic.question}</h3>
 
-                <p className="text-text-secondary mt-3">Completed</p>
-              </article>
+                  <p className="text-text-secondary mt-4 text-sm">
+                    {formatCompletedDate(topic.completedAt)}
+                  </p>
+                </article>
+              </Link>
             ))}
           </div>
         )}
