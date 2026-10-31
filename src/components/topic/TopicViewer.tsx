@@ -171,7 +171,7 @@ export function TopicViewer({
 
     window.setTimeout(() => {
       setShowHeart(false);
-    }, 1200);
+    }, 1000);
 
     await toggleLike();
   };
