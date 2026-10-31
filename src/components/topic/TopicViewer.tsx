@@ -63,12 +63,24 @@ export function TopicViewer({
 
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [bookmarks, setBookmarks] = useState<Set<string>>(new Set());
+
+  const [userId, setUserId] = useState<string | null>(null);
 
   const currentSlide = slides[slideIndex];
 
+  const isBookmarked = bookmarks.has(String(currentTopic.id));
+
+  const bookmarksLoaded = useRef(false);
+
   useEffect(() => {
-    async function loadBookmark() {
+    if (bookmarksLoaded.current) {
+      return;
+    }
+
+    bookmarksLoaded.current = true;
+
+    async function loadBookmarks() {
       const supabase = createClient();
 
       const {
@@ -76,22 +88,18 @@ export function TopicViewer({
       } = await supabase.auth.getUser();
 
       if (!user) {
-        setIsBookmarked(false);
+        setBookmarks(new Set());
         return;
       }
 
-      const { data } = await supabase
-        .from('bookmarks')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('topic_id', currentTopic.id)
-        .maybeSingle();
+      const { data } = await supabase.from('bookmarks').select('topic_id').eq('user_id', user.id);
 
-      setIsBookmarked(!!data);
+      setBookmarks(new Set(data?.map((bookmark) => String(bookmark.topic_id)) ?? []));
+      setUserId(user.id);
     }
 
-    loadBookmark();
-  }, [currentTopic.id]);
+    loadBookmarks();
+  }, []);
 
   const previousSlide = slideIndex > 0 ? slides[slideIndex - 1] : null;
 
@@ -182,30 +190,62 @@ export function TopicViewer({
   const toggleBookmark = async () => {
     const supabase = createClient();
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
+    if (!userId) {
       router.push('/signin');
       return;
     }
 
-    if (isBookmarked) {
-      await supabase
-        .from('bookmarks')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('topic_id', currentTopic.id);
+    const currentlyBookmarked = bookmarks.has(String(currentTopic.id));
 
-      setIsBookmarked(false);
-    } else {
-      await supabase.from('bookmarks').insert({
-        user_id: user.id,
-        topic_id: currentTopic.id,
+    if (currentlyBookmarked) {
+      setBookmarks((prev) => {
+        const next = new Set(prev);
+
+        next.delete(String(currentTopic.id));
+
+        return next;
       });
 
-      setIsBookmarked(true);
+      const { error } = await supabase
+        .from('bookmarks')
+        .delete()
+        .eq('user_id', userId)
+        .eq('topic_id', String(currentTopic.id));
+
+      if (error) {
+        setBookmarks((prev) => {
+          const next = new Set(prev);
+
+          next.add(String(currentTopic.id));
+
+          return next;
+        });
+      }
+
+      return;
+    }
+
+    setBookmarks((prev) => {
+      const next = new Set(prev);
+
+      next.add(String(currentTopic.id));
+
+      return next;
+    });
+
+    const { error } = await supabase.from('bookmarks').insert({
+      user_id: userId,
+      topic_id: String(currentTopic.id),
+    });
+
+    if (error) {
+      setBookmarks((prev) => {
+        const next = new Set(prev);
+
+        next.delete(String(currentTopic.id));
+
+        return next;
+      });
     }
   };
 
