@@ -65,6 +65,10 @@ export function TopicViewer({
 
   const [isAnimating, setIsAnimating] = useState(false);
 
+  const [likedTopics, setLikedTopics] = useState(() => new Set<string>());
+
+  const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
+
   const [bookmarks, setBookmarks] = useState(() => new Set<string>());
 
   const [completedTopics, setCompletedTopics] = useState(() => new Set<string>());
@@ -94,16 +98,21 @@ export function TopicViewer({
       } = await supabase.auth.getUser();
 
       if (!user) {
+        setLikedTopics(new Set());
         setBookmarks(new Set());
         setCompletedTopics(new Set());
         return;
       }
 
-      const [bookmarksResult, progressResult] = await Promise.all([
+      const [bookmarksResult, progressResult, likesResult] = await Promise.all([
         supabase.from('bookmarks').select('topic_id').eq('user_id', user.id),
 
         supabase.from('progress').select('topic_id').eq('user_id', user.id),
+
+        supabase.from('topic_likes').select('topic_id').eq('user_id', user.id),
       ]);
+
+      setLikedTopics(new Set(likesResult.data?.map((like) => String(like.topic_id)) ?? []));
 
       setBookmarks(
         new Set(bookmarksResult.data?.map((bookmark) => String(bookmark.topic_id)) ?? [])
@@ -119,26 +128,90 @@ export function TopicViewer({
     loadBookmarks();
   }, []);
 
+  useEffect(() => {
+    async function loadLikeCounts() {
+      const supabase = createClient();
+
+      const { data } = await supabase.from('topic_likes').select('topic_id');
+
+      const counts: Record<string, number> = {};
+
+      data?.forEach((like) => {
+        const id = String(like.topic_id);
+
+        counts[id] = (counts[id] ?? 0) + 1;
+      });
+
+      setLikeCounts(counts);
+    }
+
+    loadLikeCounts();
+  }, []);
+
   const previousSlide = slideIndex > 0 ? slides[slideIndex - 1] : null;
 
   const nextSlide = slideIndex < slides.length - 1 ? slides[slideIndex + 1] : null;
 
-  const shareTopic = async () => {
-    try {
-      const url =
-        typeof window !== 'undefined' ? `${window.location.origin}/topic/${currentTopic.slug}` : '';
+  const toggleLike = async () => {
+    const supabase = createClient();
 
-      if (navigator.share) {
-        await navigator.share({
-          title: currentTopic.question,
-          url,
-        });
+    if (!userId) {
+      router.push('/signin');
 
-        return;
-      }
+      return;
+    }
 
-      await navigator.clipboard.writeText(url);
-    } catch {}
+    const currentlyLiked = likedTopics.has(currentTopicId);
+
+    if (currentlyLiked) {
+      setLikedTopics((prev) => {
+        const next = new Set(prev);
+
+        next.delete(currentTopicId);
+
+        return next;
+      });
+
+      setLikeCounts((prev) => ({
+        ...prev,
+        [currentTopicId]: Math.max(0, (prev[currentTopicId] ?? 1) - 1),
+      }));
+
+      await supabase
+        .from('topic_likes')
+        .delete()
+        .eq('user_id', userId)
+        .eq('topic_id', currentTopicId);
+
+      return;
+    }
+
+    setLikedTopics((prev) => new Set([...prev, currentTopicId]));
+
+    setLikeCounts((prev) => ({
+      ...prev,
+      [currentTopicId]: (prev[currentTopicId] ?? 0) + 1,
+    }));
+
+    await supabase.from('topic_likes').insert({
+      user_id: userId,
+      topic_id: currentTopicId,
+    });
+
+    setLikedTopics((prev) => new Set([...prev, currentTopicId]));
+
+    setLikedTopics((prev) => {
+      const next = new Set(prev);
+
+      next.add(currentTopicId);
+
+      return next;
+    });
+
+    await supabase.from('topic_likes').insert({
+      user_id: userId,
+      topic_id: currentTopicId,
+    });
   };
 
   const toggleBookmark = async () => {
@@ -201,6 +274,24 @@ export function TopicViewer({
         return next;
       });
     }
+  };
+
+  const shareTopic = async () => {
+    try {
+      const url =
+        typeof window !== 'undefined' ? `${window.location.origin}/topic/${currentTopic.slug}` : '';
+
+      if (navigator.share) {
+        await navigator.share({
+          title: currentTopic.question,
+          url,
+        });
+
+        return;
+      }
+
+      await navigator.clipboard.writeText(url);
+    } catch {}
   };
 
   const markCompleted = async (topicId: string) => {
@@ -511,12 +602,7 @@ export function TopicViewer({
 
           {
             <div className="absolute inset-x-0 top-[-100%] h-full opacity-90">
-              <TopicCard
-                type="question"
-                category={previousTopic.category}
-                title="Question"
-                content={previousTopic.question}
-              />
+              <TopicCard type="question" title="Question" content={previousTopic.question} />
             </div>
           }
 
@@ -526,7 +612,6 @@ export function TopicViewer({
             <div className="absolute top-0 left-[-100%] h-full w-full opacity-90">
               <TopicCard
                 type={previousSlide.type}
-                category={currentTopic.category}
                 title={previousSlide.title}
                 content={previousSlide.content}
                 reference={previousSlide.reference}
@@ -539,10 +624,16 @@ export function TopicViewer({
           <div className="absolute inset-0">
             <TopicCard
               type={currentSlide.type}
-              category={currentTopic.category}
               title={currentSlide.title}
               content={currentSlide.content}
               reference={currentSlide.reference}
+              isLiked={likedTopics.has(currentTopicId)}
+
+              likes={likeCounts[currentTopicId] ?? 0}
+
+              comments={0}
+
+              onLike={toggleLike}
               isBookmarked={bookmarkVisible && isBookmarked}
               onBookmark={toggleBookmark}
               onShare={shareTopic}
@@ -555,7 +646,6 @@ export function TopicViewer({
             <div className="absolute top-0 left-[100%] h-full w-full opacity-90">
               <TopicCard
                 type={nextSlide.type}
-                category={currentTopic.category}
                 title={nextSlide.title}
                 content={nextSlide.content}
                 reference={nextSlide.reference}
@@ -567,12 +657,7 @@ export function TopicViewer({
 
           {
             <div className="absolute inset-x-0 top-[100%] h-full opacity-90">
-              <TopicCard
-                type="question"
-                category={nextTopic.category}
-                title="Question"
-                content={nextTopic.question}
-              />
+              <TopicCard type="question" title="Question" content={nextTopic.question} />
             </div>
           }
         </motion.div>

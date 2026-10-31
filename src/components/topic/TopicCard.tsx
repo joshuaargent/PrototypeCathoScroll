@@ -1,28 +1,41 @@
-import { Bookmark, Share2 } from 'lucide-react';
-
-import { Badge } from '@/components/ui/Badge';
+import { Bookmark, Heart, MessageCircle, Share2 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
 interface TopicCardProps {
   type: 'question' | 'answer' | 'explanation' | 'catechism' | 'scripture';
 
-  category: string;
   title: string;
+
   content: string;
+
   reference?: string;
+
   onShare?: () => void;
-  isBookmarked?: boolean;
+
   onBookmark?: () => void;
+
+  onLike?: () => void;
+
+  likes?: number;
+
+  comments?: number;
+
+  isLiked?: boolean;
+
+  isBookmarked?: boolean;
 }
 
 export function TopicCard({
   type,
-  category,
   title,
   content,
   reference,
   onShare,
+  onLike,
+  likes = 0,
+  comments = 0,
+  isLiked = false,
   isBookmarked = false,
   onBookmark,
 }: TopicCardProps) {
@@ -72,12 +85,35 @@ export function TopicCard({
       {/* Header */}
 
       <div className="flex items-center justify-between">
-        <Badge variant="accent" size={type === 'question' ? 'lg' : 'md'}>
-          {category}
-        </Badge>
+        <span className="text-text-muted text-xs tracking-wider uppercase">{title}</span>
 
-        <div className="flex items-center gap-4">
-          <span className="text-text-muted text-xs tracking-wider uppercase">{title}</span>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onPointerDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+            onClick={onLike}
+            className={cn(
+              'flex h-11 items-center gap-2 rounded-full px-4 transition-colors',
+              isLiked
+                ? 'bg-accent-light text-accent'
+                : 'text-text-muted hover:bg-bg-secondary hover:text-text-primary'
+            )}
+          >
+            <Heart className={cn('h-5 w-5', isLiked && 'fill-current')} />
+
+            <span className="text-xs font-medium">{likes}</span>
+          </button>
+
+          <button
+            type="button"
+            className="text-text-muted hover:bg-bg-secondary hover:text-text-primary flex h-11 items-center gap-2 rounded-full px-4 transition-colors"
+          >
+            <MessageCircle className="h-5 w-5" />
+
+            <span className="text-xs font-medium">{comments}</span>
+          </button>
+
           <button
             type="button"
             onPointerDown={(e) => e.stopPropagation()}
@@ -93,6 +129,7 @@ export function TopicCard({
           >
             <Bookmark className={cn('h-5 w-5', isBookmarked && 'fill-current')} />
           </button>
+
           <button
             type="button"
             onPointerDown={(e) => e.stopPropagation()}
