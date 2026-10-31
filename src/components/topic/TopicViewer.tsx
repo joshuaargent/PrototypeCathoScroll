@@ -10,6 +10,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { flushSync } from 'react-dom';
 
+import { Heart } from 'lucide-react';
+
 import { Topic } from '@/types';
 import { getTopicSlides } from '@/lib/topicSlides';
 
@@ -51,6 +53,8 @@ export function TopicViewer({
     y: 0,
   });
 
+  const lastTapRef = useRef(0);
+
   const containerRef = useRef<HTMLDivElement>(null);
 
   const currentTopic = topics[topicIndex];
@@ -66,6 +70,8 @@ export function TopicViewer({
   const [isAnimating, setIsAnimating] = useState(false);
 
   const [likedTopics, setLikedTopics] = useState(() => new Set<string>());
+
+  const [showHeart, setShowHeart] = useState(false);
 
   const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
 
@@ -90,7 +96,7 @@ export function TopicViewer({
 
     bookmarksLoaded.current = true;
 
-    async function loadBookmarks() {
+    async function loadUserData() {
       const supabase = createClient();
 
       const {
@@ -125,7 +131,7 @@ export function TopicViewer({
       setUserId(user.id);
     }
 
-    loadBookmarks();
+    loadUserData();
   }, []);
 
   useEffect(() => {
@@ -151,6 +157,24 @@ export function TopicViewer({
   const previousSlide = slideIndex > 0 ? slides[slideIndex - 1] : null;
 
   const nextSlide = slideIndex < slides.length - 1 ? slides[slideIndex + 1] : null;
+
+  const likeTopic = async () => {
+    if (isAnimating) {
+      return;
+    }
+
+    if (likedTopics.has(currentTopicId)) {
+      return;
+    }
+
+    setShowHeart(true);
+
+    window.setTimeout(() => {
+      setShowHeart(false);
+    }, 600);
+
+    await toggleLike();
+  };
 
   const toggleLike = async () => {
     const supabase = createClient();
@@ -186,20 +210,6 @@ export function TopicViewer({
       return;
     }
 
-    setLikedTopics((prev) => new Set([...prev, currentTopicId]));
-
-    setLikeCounts((prev) => ({
-      ...prev,
-      [currentTopicId]: (prev[currentTopicId] ?? 0) + 1,
-    }));
-
-    await supabase.from('topic_likes').insert({
-      user_id: userId,
-      topic_id: currentTopicId,
-    });
-
-    setLikedTopics((prev) => new Set([...prev, currentTopicId]));
-
     setLikedTopics((prev) => {
       const next = new Set(prev);
 
@@ -208,10 +218,30 @@ export function TopicViewer({
       return next;
     });
 
-    await supabase.from('topic_likes').insert({
+    setLikeCounts((prev) => ({
+      ...prev,
+      [currentTopicId]: (prev[currentTopicId] ?? 0) + 1,
+    }));
+
+    const { error } = await supabase.from('topic_likes').insert({
       user_id: userId,
       topic_id: currentTopicId,
     });
+
+    if (error) {
+      setLikedTopics((prev) => {
+        const next = new Set(prev);
+
+        next.delete(currentTopicId);
+
+        return next;
+      });
+
+      setLikeCounts((prev) => ({
+        ...prev,
+        [currentTopicId]: Math.max(0, (prev[currentTopicId] ?? 1) - 1),
+      }));
+    }
   };
 
   const toggleBookmark = async () => {
@@ -533,6 +563,8 @@ export function TopicViewer({
     const absDx = Math.abs(dx);
     const absDy = Math.abs(dy);
 
+    const wasTap = absDx < 10 && absDy < 10;
+
     const velocityX = absDx / 16;
 
     const velocityY = absDy / 16;
@@ -567,6 +599,16 @@ export function TopicViewer({
       } else {
         springHome();
       }
+    }
+
+    if (wasTap) {
+      const now = Date.now();
+
+      if (now - lastTapRef.current < 300) {
+        void likeTopic();
+      }
+
+      lastTapRef.current = now;
     }
 
     currentRef.current = {
@@ -622,6 +664,27 @@ export function TopicViewer({
           {/* CENTER */}
 
           <div className="absolute inset-0">
+            {showHeart && (
+              <motion.div
+                initial={{
+                  scale: 0.6,
+                  opacity: 0,
+                }}
+                animate={{
+                  scale: [0.6, 1.2, 1],
+                  opacity: [0, 1, 0],
+                }}
+                transition={{
+                  duration: 0.6,
+                }}
+                className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center"
+              >
+                <div className="bg-accent/10 rounded-full p-8">
+                  <Heart className="text-accent h-40 w-40 fill-current drop-shadow-lg" />
+                </div>
+              </motion.div>
+            )}
+
             <TopicCard
               type={currentSlide.type}
               title={currentSlide.title}
