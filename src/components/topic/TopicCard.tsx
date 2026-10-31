@@ -1,4 +1,4 @@
-import { Share2 } from 'lucide-react';
+import { Bookmark, Share2 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/Badge';
 
@@ -12,9 +12,20 @@ interface TopicCardProps {
   content: string;
   reference?: string;
   onShare?: () => void;
+  isBookmarked?: boolean;
+  onBookmark?: () => void;
 }
 
-export function TopicCard({ type, category, title, content, reference, onShare }: TopicCardProps) {
+export function TopicCard({
+  type,
+  category,
+  title,
+  content,
+  reference,
+  onShare,
+  isBookmarked = false,
+  onBookmark,
+}: TopicCardProps) {
   const contentLength = content.length;
 
   const contentClasses = (() => {
@@ -60,8 +71,6 @@ export function TopicCard({ type, category, title, content, reference, onShare }
     >
       {/* Header */}
 
-      {/* Header */}
-
       <div className="flex items-center justify-between">
         <Badge variant="accent" size={type === 'question' ? 'lg' : 'md'}>
           {category}
@@ -69,6 +78,21 @@ export function TopicCard({ type, category, title, content, reference, onShare }
 
         <div className="flex items-center gap-4">
           <span className="text-text-muted text-xs tracking-wider uppercase">{title}</span>
+          <button
+            type="button"
+            onPointerDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+            onClick={onBookmark}
+            aria-label="Bookmark topic"
+            className={cn(
+              'flex h-11 w-11 items-center justify-center rounded-full transition-colors',
+              isBookmarked
+                ? 'bg-accent-light text-accent'
+                : 'text-text-muted hover:bg-bg-secondary hover:text-text-primary'
+            )}
+          >
+            <Bookmark className={cn('h-5 w-5', isBookmarked && 'fill-current')} />
+          </button>
           <button
             type="button"
             onPointerDown={(e) => e.stopPropagation()}

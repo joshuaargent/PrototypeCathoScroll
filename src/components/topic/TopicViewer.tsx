@@ -1,5 +1,9 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
+import { createClient } from '@/lib/supabase/client';
+
 import { animate, motion, useMotionValue } from 'framer-motion';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -26,6 +30,8 @@ export function TopicViewer({
   onNextTopic,
   onPreviousTopic,
 }: TopicViewerProps) {
+  const router = useRouter();
+
   const [slideIndex, setSlideIndex] = useState(0);
 
   const [axis, setAxis] = useState<'x' | 'y' | null>(null);
@@ -57,7 +63,35 @@ export function TopicViewer({
 
   const [isAnimating, setIsAnimating] = useState(false);
 
+  const [isBookmarked, setIsBookmarked] = useState(false);
+
   const currentSlide = slides[slideIndex];
+
+  useEffect(() => {
+    async function loadBookmark() {
+      const supabase = createClient();
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        setIsBookmarked(false);
+        return;
+      }
+
+      const { data } = await supabase
+        .from('bookmarks')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('topic_id', currentTopic.id)
+        .maybeSingle();
+
+      setIsBookmarked(!!data);
+    }
+
+    loadBookmark();
+  }, [currentTopic.id]);
 
   const previousSlide = slideIndex > 0 ? slides[slideIndex - 1] : null;
 
@@ -145,6 +179,36 @@ export function TopicViewer({
     } catch {}
   };
 
+  const toggleBookmark = async () => {
+    const supabase = createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      router.push('/signin');
+      return;
+    }
+
+    if (isBookmarked) {
+      await supabase
+        .from('bookmarks')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('topic_id', currentTopic.id);
+
+      setIsBookmarked(false);
+    } else {
+      await supabase.from('bookmarks').insert({
+        user_id: user.id,
+        topic_id: currentTopic.id,
+      });
+
+      setIsBookmarked(true);
+    }
+  };
+
   const springHome = () => {
     animate(x, 0, {
       type: 'spring',
@@ -165,9 +229,7 @@ export function TopicViewer({
     setIsAnimating(true);
 
     try {
-      const width =
-  containerRef.current?.clientWidth ??
-window.innerWidth;    
+      const width = containerRef.current?.clientWidth ?? window.innerWidth;
 
       await animate(x, direction === 'next' ? -width : width, {
         duration: 0.2,
@@ -354,7 +416,7 @@ window.innerWidth;
           {/* LEFT */}
 
           {previousSlide && (
-            <div className="absolute top-0 left-[-100%] h-full  w-full opacity-90">
+            <div className="absolute top-0 left-[-100%] h-full w-full opacity-90">
               <TopicCard
                 type={previousSlide.type}
                 category={currentTopic.category}
@@ -374,6 +436,8 @@ window.innerWidth;
               title={currentSlide.title}
               content={currentSlide.content}
               reference={currentSlide.reference}
+              isBookmarked={isBookmarked}
+              onBookmark={toggleBookmark}
               onShare={shareTopic}
             />
           </div>
