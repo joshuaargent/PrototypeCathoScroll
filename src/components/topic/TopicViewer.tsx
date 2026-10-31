@@ -449,6 +449,7 @@ export function TopicViewer({
                 category={previousTopic.category}
                 title="Question"
                 content={previousTopic.question}
+                isBookmarked={bookmarks.has(String(previousTopic.id))}
               />
             </div>
           }
@@ -463,6 +464,7 @@ export function TopicViewer({
                 title={previousSlide.title}
                 content={previousSlide.content}
                 reference={previousSlide.reference}
+                isBookmarked={bookmarks.has(String(currentTopic.id))}
               />
             </div>
           )}
@@ -476,7 +478,7 @@ export function TopicViewer({
               title={currentSlide.title}
               content={currentSlide.content}
               reference={currentSlide.reference}
-              isBookmarked={isBookmarked}
+              isBookmarked={bookmarks.has(String(currentTopic.id))}
               onBookmark={toggleBookmark}
               onShare={shareTopic}
             />
@@ -492,6 +494,7 @@ export function TopicViewer({
                 title={nextSlide.title}
                 content={nextSlide.content}
                 reference={nextSlide.reference}
+                isBookmarked={bookmarks.has(String(currentTopic.id))}
               />
             </div>
           )}
@@ -505,6 +508,7 @@ export function TopicViewer({
                 category={nextTopic.category}
                 title="Question"
                 content={nextTopic.question}
+                isBookmarked={bookmarks.has(String(nextTopic.id))}
               />
             </div>
           }
