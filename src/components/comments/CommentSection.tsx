@@ -132,7 +132,9 @@ export function CommentSection({ topicId }: CommentSectionProps) {
 
     const commentRows = commentsResult.data ?? [];
 
-    const userIds = [...new Set(commentRows.map((row) => row.user_id))];
+    const userIds = [
+      ...new Set([...commentRows.map((row) => row.user_id), user?.id].filter(Boolean)),
+    ];
 
     const [likesResult, profilesResult] = await Promise.all([
       supabase.from('comment_likes').select('comment_id,user_id'),
@@ -145,6 +147,14 @@ export function CommentSection({ topicId }: CommentSectionProps) {
     ]);
 
     const profiles = new Map((profilesResult.data ?? []).map((profile) => [profile.id, profile]));
+
+    if (user?.id && !profiles.has(user.id)) {
+      const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+
+      if (data) {
+        profiles.set(user.id, data);
+      }
+    }
 
     if (user?.id) {
       setCurrentProfile(profiles.get(user.id) ?? null);
