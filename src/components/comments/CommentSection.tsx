@@ -46,26 +46,9 @@ export function CommentSection({ topicId }: CommentSectionProps) {
     setUserId(user?.id ?? null);
 
     const [commentsResult, likesResult] = await Promise.all([
-      supabase
-        .from('comments')
-        .select(
-          `
-            *,
-            profiles (
-              id,
-              username,
-              display_name,
-              avatar_url,
-              bio,
-              created_at,
-              subscription_tier
-            )
-          `
-        )
-        .eq('topic_id', topicId)
-        .order('created_at', {
-          ascending: false,
-        }),
+      supabase.from('comments').select('*').eq('topic_id', topicId).order('created_at', {
+        ascending: false,
+      }),
 
       supabase.from('comment_likes').select('comment_id,user_id'),
     ]);
