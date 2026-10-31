@@ -171,7 +171,7 @@ export function TopicViewer({
 
     window.setTimeout(() => {
       setShowHeart(false);
-    }, 600);
+    }, 1200);
 
     await toggleLike();
   };
@@ -675,7 +675,7 @@ export function TopicViewer({
                   opacity: [0, 1, 0],
                 }}
                 transition={{
-                  duration: 0.6,
+                  duration: 0.8,
                 }}
                 className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center"
               >
