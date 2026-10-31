@@ -12,33 +12,24 @@ interface TopicNotesProps {
   topicId: string;
 }
 
-export function TopicNotes({
-  topicId,
-}: TopicNotesProps) {
-  const [loading, setLoading] =
-    useState(true);
+export function TopicNotes({ topicId }: TopicNotesProps) {
+  const [loading, setLoading] = useState(true);
 
-  const [saving, setSaving] =
-    useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const [signedIn, setSignedIn] =
-    useState(false);
+  const [signedIn, setSignedIn] = useState(false);
 
-  const [content, setContent] =
-    useState('');
+  const [content, setContent] = useState('');
 
-  const [message, setMessage] =
-    useState('');
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
     async function loadNote() {
-      const supabase =
-        createClient();
+      const supabase = createClient();
 
       const {
         data: { user },
-      } =
-        await supabase.auth.getUser();
+      } = await supabase.auth.getUser();
 
       if (!user) {
         setLoading(false);
@@ -47,18 +38,15 @@ export function TopicNotes({
 
       setSignedIn(true);
 
-      const { data } =
-        await supabase
-          .from('notes')
-          .select('content')
-          .eq('user_id', user.id)
-          .eq('topic_id', topicId)
-          .maybeSingle();
+      const { data } = await supabase
+        .from('notes')
+        .select('content')
+        .eq('user_id', user.id)
+        .eq('topic_id', topicId)
+        .maybeSingle();
 
       if (data) {
-        setContent(
-          data.content
-        );
+        setContent(data.content);
       }
 
       setLoading(false);
@@ -73,33 +61,30 @@ export function TopicNotes({
     setMessage('');
 
     try {
-      const supabase =
-        createClient();
+      const supabase = createClient();
 
       const {
         data: { user },
-      } =
-        await supabase.auth.getUser();
+      } = await supabase.auth.getUser();
 
       if (!user) {
         return;
       }
 
-      const { error } =
-        await supabase
-          .from('notes')
-          .upsert({
-            user_id: user.id,
-            topic_id: topicId,
-            content,
-            updated_at:
-              new Date().toISOString(),
-          });
+      const { error } = await supabase.from('notes').upsert(
+        {
+          user_id: user.id,
+          topic_id: topicId,
+          content,
+          updated_at: new Date().toISOString(),
+        },
+        {
+          onConflict: 'user_id,topic_id',
+        }
+      );
 
       if (!error) {
-        setMessage(
-          'Saved successfully.'
-        );
+        setMessage('Saved successfully.');
       }
     } finally {
       setSaving(false);
@@ -108,15 +93,7 @@ export function TopicNotes({
 
   if (loading) {
     return (
-      <section
-        className="
-          mb-16
-          rounded-2xl
-          border
-          border-border
-          p-8
-        "
-      >
+      <section className="border-border mb-16 rounded-2xl border p-8">
         <Loader2 className="h-5 w-5 animate-spin" />
       </section>
     );
@@ -124,38 +101,12 @@ export function TopicNotes({
 
   if (!signedIn) {
     return (
-      <section
-        className="
-          mb-16
-          rounded-2xl
-          border
-          border-border
-          p-8
-        "
-      >
-        <h2 className="text-3xl font-bold">
-          My Notes
-        </h2>
+      <section className="border-border mb-16 rounded-2xl border p-8">
+        <h2 className="text-3xl font-bold">My Notes</h2>
 
-        <p
-          className="
-            mt-4
-            text-text-secondary
-          "
-        >
-          Sign in to create personal
-          notes for this topic.
-        </p>
+        <p className="text-text-secondary mt-4">Sign in to create personal notes for this topic.</p>
 
-        <Link
-          href="/signin"
-          className="
-            mt-6
-            inline-flex
-            font-medium
-            text-accent
-          "
-        >
+        <Link href="/signin" className="text-accent mt-6 inline-flex font-medium">
           Sign In →
         </Link>
       </section>
@@ -163,83 +114,29 @@ export function TopicNotes({
   }
 
   return (
-    <section
-      className="
-        mb-16
-        rounded-2xl
-        border
-        border-border
-        bg-bg-secondary/30
-        p-8
-      "
-    >
-      <h2 className="text-3xl font-bold">
-        My Notes
-      </h2>
+    <section className="border-border bg-bg-secondary/30 mb-16 rounded-2xl border p-8">
+      <h2 className="text-3xl font-bold">My Notes</h2>
 
-      <p
-        className="
-          mt-3
-          text-text-secondary
-        "
-      >
-        Personal notes for this topic.
-      </p>
+      <p className="text-text-secondary mt-3">Personal notes for this topic.</p>
 
       <textarea
         value={content}
-        onChange={(e) =>
-          setContent(
-            e.target.value
-          )
-        }
+        onChange={(e) => setContent(e.target.value)}
         rows={10}
-        className="
-          mt-6
-          w-full
-          rounded-xl
-          border
-          border-border
-          bg-bg-card
-          p-4
-        "
+        className="border-border bg-bg-card mt-6 w-full rounded-xl border p-4"
         placeholder="Write your notes here..."
       />
 
-      <div
-        className="
-          mt-4
-          flex
-          items-center
-          gap-4
-        "
-      >
+      <div className="mt-4 flex items-center gap-4">
         <button
           onClick={saveNote}
           disabled={saving}
-          className="
-            rounded-xl
-            bg-accent
-            px-6
-            py-3
-            text-white
-          "
+          className="bg-accent rounded-xl px-6 py-3 text-white"
         >
-          {saving
-            ? 'Saving...'
-            : 'Save Note'}
+          {saving ? 'Saving...' : 'Save Note'}
         </button>
 
-        {message && (
-          <span
-            className="
-              text-sm
-              text-text-secondary
-            "
-          >
-            {message}
-          </span>
-        )}
+        {message && <span className="text-text-secondary text-sm">{message}</span>}
       </div>
     </section>
   );
