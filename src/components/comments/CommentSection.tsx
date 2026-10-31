@@ -73,6 +73,8 @@ export function CommentSection({ topicId }: CommentSectionProps) {
 
     const roots: Comment[] = [];
 
+    console.log(commentRows);
+
     commentRows.forEach((row) => {
       map.set(row.id, {
         id: row.id,
