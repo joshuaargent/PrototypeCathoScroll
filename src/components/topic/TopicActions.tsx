@@ -107,7 +107,7 @@ export function TopicActions({ topicId, slug, title }: TopicActionsProps) {
   }
 
   return (
-    <div className="mt-8 flex flex-wrap gap-3">
+    <div className="mt-4 flex flex-wrap gap-3">
       <Button
         type="button"
         variant={isBookmarked ? 'primary' : 'secondary'}
