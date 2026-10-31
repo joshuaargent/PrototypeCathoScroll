@@ -136,46 +136,72 @@ export default async function ProfilePage({ params }: Props) {
     notFound();
   }
 
-  const [progressResult, bookmarksResult, notesResult, recentProgressResult, streakResult] =
-    await Promise.all([
-      supabase
-        .from('progress')
-        .select('topic_id', {
-          count: 'exact',
-        })
-        .eq('user_id', profile.id),
+  const [
+    progressResult,
+    bookmarksResult,
+    recentProgressResult,
+    streakResult,
+    commentsResult,
+    commentCountResult,
+    commentLikesResult,
+  ] = await Promise.all([
+    supabase
+      .from('progress')
+      .select('topic_id', {
+        count: 'exact',
+      })
+      .eq('user_id', profile.id),
 
-      supabase
-        .from('bookmarks')
-        .select('topic_id', {
-          count: 'exact',
-        })
-        .eq('user_id', profile.id),
+    supabase
+      .from('bookmarks')
+      .select('topic_id', {
+        count: 'exact',
+      })
+      .eq('user_id', profile.id),
 
-      supabase
-        .from('notes')
-        .select('id', {
-          count: 'exact',
-        })
-        .eq('user_id', profile.id),
+    supabase
+      .from('progress')
+      .select('topic_id, completed_at')
+      .eq('user_id', profile.id)
+      .order('completed_at', {
+        ascending: false,
+      })
+      .limit(6),
 
-      supabase
-        .from('progress')
-        .select('topic_id, completed_at')
-        .eq('user_id', profile.id)
-        .order('completed_at', {
-          ascending: false,
-        })
-        .limit(6),
+    supabase.from('progress').select('completed_at').eq('user_id', profile.id),
 
-      supabase.from('progress').select('completed_at').eq('user_id', profile.id),
-    ]);
+    supabase
+      .from('comments')
+      .select('id,topic_id,content,created_at,is_deleted')
+      .eq('user_id', profile.id)
+      .eq('is_deleted', false)
+      .order('created_at', {
+        ascending: false,
+      })
+      .limit(6),
+
+    supabase
+      .from('comments')
+      .select('id', {
+        count: 'exact',
+      })
+      .eq('user_id', profile.id)
+      .eq('is_deleted', false),
+
+    supabase.from('comment_likes').select('comment_id'),
+  ]);
 
   const completedCount = progressResult.count ?? 0;
 
   const bookmarkCount = bookmarksResult.count ?? 0;
 
-  const notesCount = notesResult.count ?? 0;
+  const commentCount = commentCountResult.count ?? 0;
+
+  const userCommentIds = (commentsResult.data ?? []).map((comment) => comment.id);
+
+  const likesReceived = (commentLikesResult.data ?? []).filter((like) =>
+    userCommentIds.includes(like.comment_id)
+  ).length;
 
   const streakDates = (streakResult.data ?? []).map((row) => row.completed_at);
 
@@ -201,6 +227,22 @@ export default async function ProfilePage({ params }: Props) {
     })
     .filter((topic): topic is NonNullable<typeof topic> => topic !== null);
 
+  const recentComments = (commentsResult.data ?? [])
+    .map((comment) => {
+      const topic = topics.find((topic) => String(topic.id) === String(comment.topic_id));
+
+      if (!topic) {
+        return null;
+      }
+
+      return {
+        ...comment,
+        slug: topic.slug,
+        question: topic.question,
+      };
+    })
+    .filter((comment): comment is NonNullable<typeof comment> => comment !== null);
+
   return (
     <main className="container py-12">
       <div className="mt-8 mb-16">
@@ -209,7 +251,7 @@ export default async function ProfilePage({ params }: Props) {
         <p className="text-text-secondary mt-4 text-lg">@{profile.username}</p>
 
         <p className="text-text-muted mt-4">
-          {completedCount} Completed • {bookmarkCount} Bookmarks • {notesCount} Notes
+          {completedCount} Completed • {bookmarkCount} Bookmarks • {commentCount} Comments
         </p>
 
         <p className="text-text-secondary mt-6 max-w-3xl text-lg">{profile.bio || 'No bio yet.'}</p>
@@ -246,7 +288,7 @@ export default async function ProfilePage({ params }: Props) {
         </article>
       </section>
 
-      <section className="3 mb-16 grid gap-6 md:grid-cols-2 xl:grid-cols-5">
+      <section className="3 mb-16 grid gap-6 md:grid-cols-2 xl:grid-cols-6">
         <article className="border-border h-full rounded-2xl border p-6">
           <Badge variant="accent" size="sm">
             Completed
@@ -265,11 +307,20 @@ export default async function ProfilePage({ params }: Props) {
 
         <article className="border-border h-full rounded-2xl border p-6">
           <Badge variant="accent" size="sm">
-            Notes
+            Comments
           </Badge>
 
-          <p className="mt-4 text-5xl font-extrabold">{notesCount}</p>
+          <p className="mt-4 text-5xl font-extrabold">{commentCount}</p>
         </article>
+
+        <article className="border-border h-full rounded-2xl border p-6">
+          <Badge variant="accent" size="sm">
+            Likes Received
+          </Badge>
+
+          <p className="mt-4 text-5xl font-extrabold">{likesReceived}</p>
+        </article>
+
         <article className="border-border h-full rounded-2xl border p-6">
           <Badge variant="accent" size="sm">
             Streak
@@ -285,6 +336,36 @@ export default async function ProfilePage({ params }: Props) {
 
           <p className="mt-4 text-5xl font-extrabold">{longestStreak}</p>
         </article>
+      </section>
+
+      <section className="mb-16">
+        <h2 className="mb-6 text-3xl font-bold">Recent Comments</h2>
+
+        {recentComments.length === 0 ? (
+          <article className="border-border rounded-2xl border p-6">
+            <p className="text-text-secondary">No comments yet.</p>
+          </article>
+        ) : (
+          <div className="space-y-4">
+            {recentComments.map((comment) => (
+              <Link key={comment.id} href={`/topic/${comment.slug}#comments`}>
+                <article className="border-border hover:bg-bg-secondary rounded-2xl border p-6 transition-colors">
+                  <p className="font-semibold">{comment.question}</p>
+
+                  <p className="text-text-secondary mt-3 line-clamp-3">{comment.content}</p>
+
+                  <p className="text-text-muted mt-4 text-sm">
+                    {new Date(comment.created_at).toLocaleDateString('en-GB', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                    })}
+                  </p>
+                </article>
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
 
       <section>
