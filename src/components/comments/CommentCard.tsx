@@ -8,6 +8,8 @@ import { Comment } from '../../lib/supabase/types';
 
 import { CommentForm } from './CommentForm';
 
+import Link from 'next/link';
+
 interface CommentCardProps {
   comment: Comment;
 
@@ -26,6 +28,8 @@ interface CommentCardProps {
   onDelete: (commentId: number) => Promise<void>;
 
   onPin?: (commentId: number) => Promise<void>;
+
+  hasPinnedComment?: boolean;
 }
 
 function formatRelativeDate(dateString: string) {
@@ -72,6 +76,7 @@ export function CommentCard({
   onEdit,
   onDelete,
   onPin,
+  hasPinnedComment = false,
 }: CommentCardProps) {
   const [showReply, setShowReply] = useState(false);
 
@@ -83,7 +88,8 @@ export function CommentCard({
 
   const canPin = currentUsername === 'joshua_argent' || currentUsername === 'admin';
 
-  const canShowPinButton = canPin && comment.parent_id === null;
+  const canShowPinButton =
+    canPin && comment.parent_id === null && (comment.is_pinned || !hasPinnedComment);
 
   return (
     <div className="space-y-4">
@@ -98,7 +104,12 @@ export function CommentCard({
             </div>
           )}
           <div className="flex flex-wrap items-center gap-2">
-            <p className="font-semibold">{comment.profile.display_name}</p>
+            <Link
+              href={`/profile/${comment.profile.username}`}
+              className="hover:text-accent font-semibold transition-colors"
+            >
+              {comment.profile.display_name}
+            </Link>
 
             {isOwner && (
               <span className="bg-accent-light text-accent rounded-full px-2 py-0.5 text-xs font-medium">
@@ -150,7 +161,7 @@ export function CommentCard({
                 ♥ {comment.likes}
               </button>
 
-              {!isEditing && canReply && (
+              {!isEditing && canReply && currentUserId && (
                 <button
                   type="button"
                   onClick={() => setShowReply(!showReply)}

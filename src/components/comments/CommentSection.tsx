@@ -99,6 +99,8 @@ export function CommentSection({ topicId }: CommentSectionProps) {
 
   const commentCount = useMemo(() => countComments(comments), [comments]);
 
+  const hasPinnedComment = comments.some((comment) => comment.is_pinned);
+
   const sortComments = useCallback((comments: Comment[]) => {
     comments.sort((a, b) => {
       if (a.is_pinned !== b.is_pinned) {
@@ -225,6 +227,7 @@ export function CommentSection({ topicId }: CommentSectionProps) {
   }, [topicId, sortComments]);
 
   useEffect(() => {
+    //
     void loadComments();
   }, [loadComments]);
 
@@ -513,16 +516,19 @@ export function CommentSection({ topicId }: CommentSectionProps) {
         <div className="space-y-6">
           {comments.map((comment) => (
             <CommentCard
-              key={comment.id}
-              comment={comment}
-              currentUserId={userId}
-              currentUsername={currentUsername}
-              onReply={createReply}
-              onLike={toggleLike}
-              onEdit={editComment}
-              onDelete={deleteComment}
-              onPin={togglePin}
-            />
+  key={comment.id}
+  comment={comment}
+  currentUserId={userId}
+  currentUsername={currentUsername}
+  hasPinnedComment={
+    hasPinnedComment
+  }
+  onReply={createReply}
+  onLike={toggleLike}
+  onEdit={editComment}
+  onDelete={deleteComment}
+  onPin={togglePin}
+/>
           ))}
         </div>
       )}
