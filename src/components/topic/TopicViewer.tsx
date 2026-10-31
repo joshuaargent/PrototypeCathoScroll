@@ -69,9 +69,19 @@ export function TopicViewer({
 
   const currentSlide = slides[slideIndex];
 
-  const isBookmarked = bookmarks.has(String(currentTopic.id));
+  const [visibleTopicId, setVisibleTopicId] = useState(String(currentTopic.id));
+
+  const isBookmarked = bookmarks.has(visibleTopicId);
 
   const bookmarksLoaded = useRef(false);
+
+  useEffect(() => {
+    if (isAnimating) {
+      return;
+    }
+
+    setVisibleTopicId(String(currentTopic.id));
+  }, [currentTopic.id, isAnimating]);
 
   useEffect(() => {
     if (bookmarksLoaded.current) {
@@ -449,7 +459,6 @@ export function TopicViewer({
                 category={previousTopic.category}
                 title="Question"
                 content={previousTopic.question}
-                isBookmarked={bookmarks.has(String(previousTopic.id))}
               />
             </div>
           }
@@ -464,7 +473,6 @@ export function TopicViewer({
                 title={previousSlide.title}
                 content={previousSlide.content}
                 reference={previousSlide.reference}
-                isBookmarked={bookmarks.has(String(currentTopic.id))}
               />
             </div>
           )}
@@ -478,7 +486,7 @@ export function TopicViewer({
               title={currentSlide.title}
               content={currentSlide.content}
               reference={currentSlide.reference}
-              isBookmarked={bookmarks.has(String(currentTopic.id))}
+              isBookmarked={isBookmarked}
               onBookmark={toggleBookmark}
               onShare={shareTopic}
             />
@@ -494,7 +502,6 @@ export function TopicViewer({
                 title={nextSlide.title}
                 content={nextSlide.content}
                 reference={nextSlide.reference}
-                isBookmarked={bookmarks.has(String(currentTopic.id))}
               />
             </div>
           )}
@@ -508,7 +515,6 @@ export function TopicViewer({
                 category={nextTopic.category}
                 title="Question"
                 content={nextTopic.question}
-                isBookmarked={bookmarks.has(String(nextTopic.id))}
               />
             </div>
           }
