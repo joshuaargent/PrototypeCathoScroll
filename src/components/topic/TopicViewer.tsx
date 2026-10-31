@@ -75,6 +75,8 @@ export function TopicViewer({
 
   const bookmarksLoaded = useRef(false);
 
+  const bookmarkVisible = !isAnimating;
+
   useEffect(() => {
     if (isAnimating) {
       return;
@@ -486,7 +488,7 @@ export function TopicViewer({
               title={currentSlide.title}
               content={currentSlide.content}
               reference={currentSlide.reference}
-              isBookmarked={isBookmarked}
+              isBookmarked={bookmarkVisible && isBookmarked}
               onBookmark={toggleBookmark}
               onShare={shareTopic}
             />
