@@ -50,7 +50,6 @@ export default async function TopicPage({ params }: Props) {
         </p>
       </section>
 
-      <TopicActions topicId={String(topic.id)} slug={topic.slug} title={topic.question} />
 
       <section className="mb-16">
         <h2 className="mb-6 text-3xl font-bold">Explanation</h2>
