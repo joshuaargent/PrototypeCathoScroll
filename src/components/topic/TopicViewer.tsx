@@ -75,6 +75,8 @@ export function TopicViewer({
 
   const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
 
+  const [commentCounts, setCommentCounts] = useState<Record<string, number>>({});
+
   const [bookmarks, setBookmarks] = useState(() => new Set<string>());
 
   const [completedTopics, setCompletedTopics] = useState(() => new Set<string>());
@@ -152,6 +154,29 @@ export function TopicViewer({
     }
 
     loadLikeCounts();
+  }, []);
+
+  useEffect(() => {
+    async function loadCommentCounts() {
+      const supabase = createClient();
+
+      const { data } = await supabase
+        .from('comments')
+        .select('topic_id,is_deleted')
+        .eq('is_deleted', false);
+
+      const counts: Record<string, number> = {};
+
+      data?.forEach((comment) => {
+        const id = String(comment.topic_id);
+
+        counts[id] = (counts[id] ?? 0) + 1;
+      });
+
+      setCommentCounts(counts);
+    }
+
+    loadCommentCounts();
   }, []);
 
   const previousSlide = slideIndex > 0 ? slides[slideIndex - 1] : null;
@@ -304,6 +329,10 @@ export function TopicViewer({
         return next;
       });
     }
+  };
+
+  const openComments = () => {
+    router.push(`/topic/${currentTopic.slug}#comments`);
   };
 
   const shareTopic = async () => {
@@ -694,7 +723,8 @@ export function TopicViewer({
 
               likes={interactionVisible ? (likeCounts[currentTopicId] ?? 0) : 0}
 
-              comments={0}
+              comments={commentCounts[currentTopicId] ?? 0}
+              onComments={openComments}
 
               onLike={toggleLike}
               isBookmarked={interactionVisible && isBookmarked}

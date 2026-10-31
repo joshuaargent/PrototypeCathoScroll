@@ -17,6 +17,8 @@ interface TopicCardProps {
 
   onLike?: () => void;
 
+  onComments?: () => void;
+
   likes?: number;
 
   comments?: number;
@@ -33,6 +35,7 @@ export function TopicCard({
   reference,
   onShare,
   onLike,
+  onComments,
   likes = 0,
   comments = 0,
   isLiked = false,
@@ -107,6 +110,9 @@ export function TopicCard({
 
           <button
             type="button"
+            onPointerDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+            onClick={onComments}
             className="text-text-muted hover:bg-bg-secondary hover:text-text-primary flex h-11 items-center gap-2 rounded-full px-4 transition-colors"
           >
             <MessageCircle className="h-5 w-5" />
